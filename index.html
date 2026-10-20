@@ -385,6 +385,11 @@ body.gated .lead-fab{bottom:calc(18px + env(safe-area-inset-bottom))}
 .lp-final .lp-cta{justify-content:center}
 .lp-final .btn.ghost{color:var(--nav-ink);border-color:#333a4c}
 .demo-banner{flex-basis:100%;border:1.5px dashed var(--gold);background:var(--goldsoft);color:var(--goldink);border-radius:12px;padding:9px 12px;font-size:13.5px;font-weight:700;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* demo: a barra mostra SÓ o segmento escolhido — nada dos outros segmentos */
+body.demo .seg-group,body.demo .storechip{display:none}
+body.demo .segbar-in{padding:7px 16px;gap:8px}
+body.demo .demo-banner{padding:6px 10px;font-size:12.5px;border-radius:10px;gap:6px}
+body.demo .demo-banner .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .lead-fab{position:fixed;right:14px;bottom:calc(94px + env(safe-area-inset-bottom));z-index:70;background:linear-gradient(145deg,#e8bc52,#c08f16);color:#221a02;border:1.5px solid #a8740a;border-radius:999px;padding:14px 20px;font-weight:800;font-size:15.5px;box-shadow:var(--shadow);font-family:inherit;cursor:pointer}
 .lead-fab:active{transform:scale(.97)}
 footer{max-width:1240px;margin:26px auto 0;padding:0 16px;color:var(--muted);font-size:13px}
@@ -423,9 +428,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
     <div class="demo-banner" id="demoBanner" style="display:none">
       <span>🧪 <b>AMBIENTE DE DEMONSTRAÇÃO</b> · dados fictícios · Loja: <b id="demoBannerStore">—</b></span>
       <span style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span style="font-weight:800">Visão demo:</span>
-      <button class="chip on" data-drole="admin" type="button" style="min-height:32px;padding:4px 11px">Admin da loja</button>
-      <button class="chip" data-drole="caixa" type="button" style="min-height:32px;padding:4px 11px">Caixa</button>
-      <button class="chip" data-drole="garcom" id="droleGarcom" type="button" style="min-height:32px;padding:4px 11px">Garçom</button></span>
+      <button class="chip on" data-drole="admin" type="button">Admin da loja</button>
+      <button class="chip" data-drole="caixa" type="button">Caixa</button>
+      <button class="chip" data-drole="garcom" id="droleGarcom" type="button">Garçom</button>
+      <button class="chip" id="demoSwapSeg" type="button" title="Voltar e escolher outro segmento">↩ Trocar segmento</button></span>
     </div>
   </div>
 </div>
@@ -837,8 +843,8 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
     <div class="kpis">
       <div class="kpi"><span>Vendas hoje</span><b id="kpiSales">R$ 0,00</b><small id="kpiSalesN">0 vendas</small></div>
       <div class="kpi"><span>Ticket médio</span><b id="kpiTicket">R$ 0,00</b><small>por venda concluída</small></div>
-      <div class="kpi"><span>Mesas abertas</span><b id="kpiTables">0</b><small>em atendimento</small></div>
-      <div class="kpi"><span>Agendamentos hoje</span><b id="kpiAppts">0</b><small>na agenda da loja</small></div>
+      <div class="kpi" id="kpiTablesCard"><span>Mesas abertas</span><b id="kpiTables">0</b><small>em atendimento</small></div>
+      <div class="kpi" id="kpiApptsCard"><span>Agendamentos hoje</span><b id="kpiAppts">0</b><small>na agenda da loja</small></div>
       <div class="kpi"><span>Estoque baixo</span><b id="kpiLow">0</b><small>itens pedindo reposição</small></div>
     </div>
     <div class="card">
@@ -1808,8 +1814,8 @@ $$(".seg-chip").forEach(c=>c.addEventListener("click",()=>{ applySegment(c.datas
 $("#installBtn").addEventListener("click",()=>toast("No celular: menu do navegador → “Adicionar à tela inicial”. O IMPERIUMTECH abre como aplicativo."));
 
 function syncModuleNav(){
-  $$(".vnav[data-mod]").forEach(b=>{ b.classList.toggle("hide", !state.modules[b.dataset.mod]); });
   $$("[data-modtab]").forEach(b=>{ b.style.display = state.modules[b.dataset.modtab] ? "" : "none"; });
+  applyRoleNav();
 }
 
 /* ---------- PDV ---------- */
@@ -2491,6 +2497,9 @@ function renderKpis(){
   $("#kpiTicket").textContent = state.sales.length ? money(total/state.sales.length) : "R$ 0,00";
   $("#kpiTables").textContent = state.tables.filter(t=>t.items.length).length;
   $("#kpiAppts").textContent = state.appts.filter(a=>a.status!=="cancelado").length;
+  /* KPIs só do segmento ativo: mesas não aparecem fora de restaurante, agenda só onde existe */
+  $("#kpiTablesCard").style.display = state.modules.mesas ? "" : "none";
+  $("#kpiApptsCard").style.display = state.modules.agenda ? "" : "none";
   $("#kpiLow").textContent = state.products.filter(p=>p.unit==="un"&&p.stock<=5).length;
   const days = ["Seg","Ter","Qua","Qui","Sex","Sáb","Dom"];
   const vals = state.weekBase.map((v,ix)=> ix===5 ? v + total : v);
@@ -2719,6 +2728,7 @@ function renderAdmin(){
   $("#saStoreTable tbody").innerHTML = state.saStores.map((s,ix)=>'<tr><td data-l="Loja"><b>'+s.name+'</b></td><td data-l="Segmento">'+s.seg+'</td><td data-l="Plano"><span class="tag gd">'+s.plan+'</span></td><td data-l="Vendas/mês">'+s.sales.toLocaleString("pt-BR")+'</td><td data-l="Status"><span class="tag '+(s.status==="Ativa"?"g":"a")+'">'+s.status+'</span></td><td>'+(SA_OPEN[s.name]?'<button class="btn sm gold" data-saopen="'+SA_OPEN[s.name]+'" type="button">Abrir loja</button> ':"")+'<button class="btn sm" data-sareset="'+ix+'" type="button">Resetar senha do dono</button></td></tr>').join("");
   $$("#saStoreTable [data-saopen]").forEach(b=>b.addEventListener("click",()=>{
     document.body.classList.remove("gated");
+    document.body.classList.remove("demo");
     $("#leadFab").style.display = "none"; $("#exitDemoBtn").style.display = "none";
     applyStore(b.dataset.saopen, false);
     showView("pdv");
@@ -3140,10 +3150,15 @@ const ROLE_VIEWS = {
   garcom:["pdv","mesas","agenda","cozinha"]
 };
 function applyRoleNav(){
+  /* Recalcula do zero: a aba só aparece se o módulo pertence ao segmento ativo
+     E (na demo) a função atual usa aquela tela. Nada de outro segmento vaza. */
   $$(".vnav").forEach(b=>{
     const v = b.dataset.view;
     if(v==="admin"){ b.classList.toggle("hide", !!state.demo); return; }
-    if(state.demo){ const allow = ROLE_VIEWS[state.role]||ROLE_VIEWS.admin; if(!allow.includes(v)) b.classList.add("hide"); }
+    let hide = false;
+    if(b.dataset.mod && !state.modules[b.dataset.mod]) hide = true;
+    if(state.demo){ const allow = ROLE_VIEWS[state.role]||ROLE_VIEWS.admin; if(!allow.includes(v)) hide = true; }
+    b.classList.toggle("hide", hide);
   });
 }
 function setRole(role){
@@ -3157,6 +3172,7 @@ function setRole(role){
 }
 function enterGate(){
   document.body.classList.add("gated");
+  document.body.classList.remove("demo");
   $("#leadFab").style.display = "";
   $("#exitDemoBtn").style.display = "none";
   showView("gate");
@@ -3164,15 +3180,22 @@ function enterGate(){
 }
 function enterDemo(segKey){
   document.body.classList.remove("gated");
+  document.body.classList.add("demo");
   applyStore(segKey, true);
   $("#leadFab").style.display = "";
   $("#exitDemoBtn").style.display = "";
   setRole("admin");
   showView("pdv");
-  toast("🧪 Demonstração de "+seg().label+" — loja fictícia "+state.store.name+". Pode testar tudo: vender, abrir mesa, ver a cozinha, agendar.");
+  const feats = ["vender no PDV"];
+  if(state.modules.mesas) feats.push("abrir uma mesa");
+  if(state.modules.cozinha) feats.push("acompanhar a cozinha");
+  if(state.modules.cardapio) feats.push("ver o cardápio digital");
+  if(state.modules.agenda) feats.push("fazer um agendamento");
+  toast("🧪 Demonstração de "+seg().label+" — loja fictícia "+state.store.name+". Pode testar: "+feats.join(", ")+".");
 }
 function enterOwner(){
   document.body.classList.remove("gated");
+  document.body.classList.remove("demo");
   applyStore(state.seg || "restaurante", false);
   $("#leadFab").style.display = "none";
   $("#exitDemoBtn").style.display = "none";
@@ -3182,6 +3205,7 @@ function enterOwner(){
 $$("[data-gate]").forEach(b=>b.addEventListener("click",()=>enterDemo(b.dataset.gate)));
 $("#gateOwner").addEventListener("click",()=>askPin("entrar no Super Admin — área exclusiva do dono do sistema, fora da demonstração pública", enterOwner));
 $("#exitDemoBtn").addEventListener("click",()=>{ enterGate(); toast("Você saiu da demonstração. Os dados fictícios ficam como estavam — quem entrar de novo continua de onde parou, ou restaura tudo no Painel da loja-demo."); });
+$("#demoSwapSeg").addEventListener("click",()=>{ enterGate(); document.querySelector("#demo").scrollIntoView({behavior:"smooth"}); toast("Escolha outro segmento para testar — cada demonstração mostra só o que é daquele segmento."); });
 $$("[data-drole]").forEach(b=>b.addEventListener("click",()=>{ setRole(b.dataset.drole); toast("Visão demo: "+rolePersona()+" — os menus mostram só as telas dessa função, sempre dentro desta loja."); }));
 $("#dlEnter").addEventListener("click",()=>{
   const u = $("#dlUser").value.trim().toLowerCase(), p = $("#dlPass").value.trim();
