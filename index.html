@@ -601,7 +601,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <div class="favs" id="pdvFavs"></div>
       <div class="cats" id="pdvCats"></div>
       <div class="pgrid" id="pdvGrid"></div>
-      <p class="hint" style="margin-top:12px">Unidades suportadas: <b>un</b> (unidade) · <b>kg/g</b> (peso, integração com balança) · <b>L/ml</b> (medida) · <b>m/cm</b> (comprimento) · <b>serviço</b> (valor aberto). O lojista define a unidade de cada produto no cadastro.</p>
+      <p class="hint" style="margin-top:12px" id="unitsHint">Unidades suportadas: <b>un</b> (unidade) · <b>kg/g</b> (peso, integração com balança) · <b>L/ml</b> (medida) · <b>m/cm</b> (comprimento) · <b>serviço</b> (valor aberto). O lojista define a unidade de cada produto no cadastro.</p>
     </div>
     <div class="card cart">
       <h3>Carrinho <span class="tag" id="cartCtx">Balcão</span></h3>
@@ -688,7 +688,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 <!-- ============ AGENDA ============ -->
 <section class="view" id="view-agenda">
   <div class="sec-head">
-    <div><h2>Agenda de serviços</h2><p>Barbearias, salões, oficinas e clínicas: serviços com duração, profissional e bloqueio automático de horário.</p></div>
+    <div><h2>Agenda de serviços</h2><p id="agendaSub">Serviços com duração, profissional e bloqueio automático de horário.</p></div>
     <div class="sp"><span class="tag gd">Hoje · <span id="todayLbl"></span></span></div>
   </div>
   <div class="agenda-layout">
@@ -722,7 +722,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 <!-- ============ CARDÁPIO ============ -->
 <section class="view" id="view-cardapio">
   <div class="sec-head">
-    <div><h2>Cardápio digital &amp; pedidos online</h2><p>Link público da loja: o cliente monta o pedido no celular e ele cai direto na cozinha — sem baixar aplicativo.</p></div>
+    <div><h2>Cardápio digital &amp; pedidos online</h2><p id="menuHeadSub">Link público da loja: o cliente monta o pedido no celular e ele cai direto na cozinha — sem baixar aplicativo.</p></div>
   </div>
   <div class="card">
     <div class="menu-head">
@@ -743,25 +743,25 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <div class="totrow grand"><span>Total do pedido</span><span id="menuTotal">R$ 0,00</span></div>
       <div class="frow" style="margin-top:10px">
         <div class="field"><label for="menuName">Seu nome</label><input id="menuName" placeholder="Como te chamamos?" /></div>
-        <div class="field"><label for="menuTable">Mesa / entrega</label>
+        <div class="field"><label for="menuTable" id="menuDestLabel">Mesa / entrega</label>
           <select id="menuTable"><option value="Balcão/retirada">Retirada no balcão</option><option value="Mesa 1">Mesa 1</option><option value="Mesa 2">Mesa 2</option><option value="Mesa 3">Mesa 3</option><option value="Entrega">Entrega</option></select></div>
       </div>
       <button class="btn gold block" id="menuSendBtn" type="button">Enviar pedido para a cozinha</button>
     </div>
   </div>
   <div class="card" style="margin-top:16px">
-    <h3>📱 QR Code nas mesas — pedir e pagar sem chamar o garçom</h3>
-    <p class="sub">Um QR por mesa: o cliente aponta a câmera, o cardápio abre <b>já vinculado à mesa dele</b>, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai na cozinha e na comanda da mesa ao mesmo tempo.</p>
+    <h3 id="qrCardTitle">📱 QR Code nas mesas — pedir e pagar sem chamar o garçom</h3>
+    <p class="sub" id="qrCardSub">Um QR por mesa: o cliente aponta a câmera, o cardápio abre <b>já vinculado à mesa dele</b>, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai na cozinha e na comanda da mesa ao mesmo tempo.</p>
     <div class="tgrid" id="tableQrGrid" style="margin-top:12px"></div>
   </div>
   <div class="card" style="margin-top:16px">
     <h3>💬 WhatsApp automático — extensão do navegador</h3>
-    <p class="sub">Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O garçom digital e o atendimento automático usam a mesma extensão.</p>
+    <p class="sub" id="waCardSub">Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O garçom digital e o atendimento automático usam a mesma extensão.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center">
       <span class="tag g">Extensão conectada · WhatsApp Web da loja</span>
       <button class="btn sm" id="waExtTest" type="button">Testar aviso de status</button>
     </div>
-    <p class="hint" style="margin-top:8px">Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status na cozinha ou no delivery dispara o aviso sozinho.</p>
+    <p class="hint" style="margin-top:8px" id="waCardHint">Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status na cozinha ou no delivery dispara o aviso sozinho.</p>
   </div>
 </section>
 
@@ -820,7 +820,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="ptab on" id="ptab-visao">
     <div class="card" id="demoLoginCard" style="display:none;margin-bottom:16px;border-color:var(--gold)">
       <h3>🔐 Acesso de demonstração</h3>
-      <p class="sub">Entre com o usuário <b>demo</b> e a senha <b>demo</b> para alternar a visão por função desta loja — Admin da loja, Caixa ou Garçom/Profissional. Cada função só enxerga as telas do seu trabalho, e sempre <b>somente os dados desta loja-demo</b>: nada das outras lojas aparece, em nenhuma função.</p>
+      <p class="sub">Entre com o usuário <b>demo</b> e a senha <b>demo</b> para alternar a visão por função desta loja — Admin da loja, Caixa ou <span id="dlRoleWord">Garçom</span>. Cada função só enxerga as telas do seu trabalho, e sempre <b>somente os dados desta loja-demo</b>: nada das outras lojas aparece, em nenhuma função.</p>
       <div class="frow" style="margin-top:12px">
         <div class="field"><label for="dlUser">Usuário</label><input id="dlUser" value="demo" autocomplete="off" /></div>
         <div class="field"><label for="dlPass">Senha</label><input id="dlPass" type="password" value="demo" autocomplete="off" /></div>
@@ -831,12 +831,12 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="chip on" data-role="admin" type="button">Admin da loja</button>
           <button class="chip" data-role="caixa" type="button">Caixa</button>
-          <button class="chip" data-role="garcom" type="button">Garçom / Profissional</button>
+          <button class="chip" data-role="garcom" id="dlRoleChip" type="button">Garçom</button>
         </div>
       </div>
       <div style="border-top:1.5px dashed var(--line2);margin-top:16px;padding-top:14px">
         <b>Bagunçou a demonstração?</b>
-        <p class="hint" style="margin:4px 0 10px">Volte os dados fictícios desta loja ao estado inicial — quem testar depois (ou você mesmo) encontra tudo limpo de novo, sem herdar venda, mesa ou agendamento de outro teste.</p>
+        <p class="hint" style="margin:4px 0 10px">Volte os dados fictícios desta loja ao estado inicial — quem testar depois (ou você mesmo) encontra tudo limpo de novo, sem herdar <span id="dlRestoreList">venda, mesa ou agendamento</span> de outro teste.</p>
         <button class="btn sm" id="dlRestore" type="button">↺ Restaurar demonstração</button>
       </div>
     </div>
@@ -896,10 +896,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="ptab" id="ptab-produtos">
     <div class="card" style="margin-bottom:16px">
       <h3>Cadastrar produto ou serviço</h3>
-      <p class="sub">Vale para qualquer segmento: produto de mercado, prato, serviço de barbearia ou serviço avulso de oficina.</p>
+      <p class="sub" id="npSub">Pratos, bebidas e sobremesas da casa — cada item com preço, categoria e setor de preparo.</p>
       <div class="frow" style="margin-top:12px">
-        <div class="field"><label for="npName">Nome</label><input id="npName" placeholder="Ex.: Alinhamento 3D / Queijo coalho" /></div>
-        <div class="field"><label for="npCat">Categoria</label><input id="npCat" placeholder="Ex.: Serviços" /></div>
+        <div class="field"><label for="npName">Nome</label><input id="npName" placeholder="Ex.: Moqueca de peixe" /></div>
+        <div class="field"><label for="npCat">Categoria</label><input id="npCat" placeholder="Ex.: Pratos" /></div>
       </div>
       <div class="frow">
         <div class="field"><label for="npUnit">Unidade de venda</label>
@@ -925,7 +925,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="ptab" id="ptab-equipe">
     <div class="card">
       <h3>Equipe, funções e senhas</h3>
-      <p class="sub">Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e mesas), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.</p>
+      <p class="sub" id="teamSub">Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e mesas), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.</p>
       <div class="tblwrap" style="margin-top:12px"><table class="tbl" id="teamTable">
         <thead><tr><th>Funcionário</th><th>Função</th><th>WhatsApp</th><th>Senha</th><th>Ações</th></tr></thead>
         <tbody></tbody>
@@ -960,7 +960,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <h4 style="margin:18px 0 10px">Fechamento do dia</h4>
       <div class="tblwrap"><table class="tbl"><tbody id="repClose"></tbody></table></div>
       <h4 style="margin:20px 0 10px">Gastos do dia — registro de saídas do caixa</h4>
-      <p class="sub" style="margin-bottom:10px">Gás, gelo, motoboy, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.</p>
+      <p class="sub" style="margin-bottom:10px" id="expSub">Gás, gelo, motoboy, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.</p>
       <div id="expList"></div>
       <div class="frow" style="margin-top:10px">
         <div class="field"><label for="expDesc">Descrição do gasto</label><input id="expDesc" placeholder="Ex.: Gás, gelo, motoboy, hortifruti" /></div>
@@ -1027,9 +1027,9 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="ptab" id="ptab-combos">
     <div class="card" style="margin-bottom:16px">
       <h3 id="cbFormTitle">Novo combo promocional</h3>
-      <p class="sub">Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e no cardápio digital. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (bebida → Bar, prato → Cozinha), e no recibo o combo sai agrupado com os itens listados abaixo.</p>
+      <p class="sub" id="cbRouteSub">Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e no cardápio digital. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (bebida → Bar, prato → Cozinha), e no recibo o combo sai agrupado com os itens listados abaixo.</p>
       <div class="frow" style="margin-top:12px">
-        <div class="field"><label for="cbName">Nome do combo</label><input id="cbName" placeholder="Ex.: Combo Casal, Kit Churrasco, Corte + Barba" /></div>
+        <div class="field"><label for="cbName">Nome do combo</label><input id="cbName" placeholder="Ex.: Combo Casal, Combo Almoço da Casa" /></div>
         <div class="field"><label for="cbIcon">Ícone</label>
           <select id="cbIcon"><option>🍽️</option><option>🍔</option><option>🎁</option><option>❤️</option><option>⭐</option><option>✂️</option><option>🔧</option><option>🛒</option></select></div>
       </div>
@@ -1049,7 +1049,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <button class="btn gold" id="cbSave" type="button">Salvar combo</button>
         <button class="btn ghost" id="cbCancelEdit" type="button" style="display:none">Cancelar edição</button>
       </div>
-      <p class="hint" style="margin-top:10px">Vale para todos os segmentos: restaurante (prato + bebida + sobremesa), mercado (kits), barbearia (corte + barba — se os itens têm duração, o combo vira <b>um serviço agendável só</b> na Agenda) e oficina (revisão + troca de óleo).</p>
+      <p class="hint" style="margin-top:10px" id="cbSegHint">No restaurante, o clássico é prato + bebida + sobremesa num preço fechado — o combo sai como um item só na comanda e no caixa.</p>
     </div>
     <div class="card">
       <h3>Combos cadastrados</h3>
@@ -1058,10 +1058,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   </div>
 
   <div class="ptab" id="ptab-atalhos">
-    <div class="note"><b>Segmento atual:</b> <span id="scSegName">Restaurante</span>. Cada segmento guarda a <b>sua própria configuração</b>: desligue um atalho aqui e o botão some do PDV e das mesas na hora — a equipe só enxerga o que realmente usa. Ações sensíveis (desconto, cancelar item, sangria, fiado, gaveta) sempre pedem a senha da função.</div>
+    <div class="note"><b>Segmento atual:</b> <span id="scSegName">Restaurante</span>. Cada segmento guarda a <b>sua própria configuração</b>: desligue um atalho aqui e o botão some <span id="scNoteScope">do PDV e das mesas</span> na hora — a equipe só enxerga o que realmente usa. Ações sensíveis (desconto, cancelar item, sangria, fiado, gaveta) sempre pedem a senha da função.</div>
     <h3 style="margin:16px 0 10px">Atalhos do PDV &amp; caixa</h3>
     <div id="scPdvList"></div>
-    <h3 style="margin:20px 0 10px">Atalhos das mesas</h3>
+    <h3 style="margin:20px 0 10px" id="scTableHead">Atalhos das mesas</h3>
     <div id="scTableList"></div>
   </div>
 
@@ -1154,15 +1154,15 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 <!-- ============ HARDWARE & SETORES ============ -->
 <section class="view" id="view-setores">
   <div class="sec-head">
-    <div><h2>Hardware &amp; setores</h2><p>Impressoras, balanças, leitores e gavetas da loja — cada setor recebe só os seus itens, na sua impressora, com som de alerta para quem precisa ouvir.</p></div>
+    <div><h2>Hardware &amp; setores</h2><p id="hwHeadSub">Impressoras, leitores e gaveta da loja — cada setor (cozinha, bar, confeitaria) recebe só os seus itens, na sua impressora, com som de alerta para quem precisa ouvir.</p></div>
     <div class="sp"><span class="tag g" id="hwOnlineTag">0 dispositivos online</span></div>
   </div>
 
-  <div class="note"><b>Como funciona na prática:</b> no navegador, a detecção de hardware depende das permissões do aparelho (impressão do sistema, USB/serial e Bluetooth). Na produção, um <b>agente local IMPERIUMTECH</b> instalado no computador ou celular da loja faz a ponte com impressoras térmicas, balanças e leitores — é o mesmo modelo dos grandes sistemas de PDV. Aqui você cadastra, nomeia e testa cada dispositivo do seu jeito.</div>
+  <div class="note"><b>Como funciona na prática:</b> no navegador, a detecção de hardware depende das permissões do aparelho (impressão do sistema, USB/serial e Bluetooth). Na produção, um <b>agente local IMPERIUMTECH</b> instalado no computador ou celular da loja faz a ponte com <span id="hwAgentDevs">impressoras térmicas, leitores e gavetas</span> — é o mesmo modelo dos grandes sistemas de PDV. Aqui você cadastra, nomeia e testa cada dispositivo do seu jeito.</div>
 
   <div class="card" style="margin-bottom:16px">
     <h3>Central de dispositivos</h3>
-    <p class="sub">Detecte, salve com nome e setor (ex.: “Impressora Bar”, “Balança do Açougue”), acompanhe o status e teste quando quiser.</p>
+    <p class="sub" id="devSub">Detecte, salve com nome e setor (ex.: “Impressora Cozinha”, “Impressora Bar”), acompanhe o status e teste quando quiser.</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
       <button class="btn gold sm" id="scanBtn" type="button">🔍 Detectar dispositivos</button>
       <span class="hint" id="scanMsg" style="align-self:center">Varredura procura USB, rede local, serial e Bluetooth pareados.</span>
@@ -1184,7 +1184,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 
   <div class="card" style="margin-bottom:16px">
     <h3>Setores &amp; roteamento de impressão</h3>
-    <p class="sub">Cada categoria de produto pertence a um setor. Ao fechar um pedido — mesa, balcão ou cardápio digital — o sistema separa os itens e manda cada grupo para a impressora do setor, sozinho.</p>
+    <p class="sub" id="routeSub">Cada categoria de produto pertence a um setor. Ao fechar um pedido — mesa, balcão ou cardápio digital — o sistema separa os itens e manda cada grupo para a impressora do setor, sozinho.</p>
     <div id="sectorList" style="margin-top:12px"></div>
     <div id="lastRoute"></div>
   </div>
@@ -1192,7 +1192,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="grid2" style="grid-template-columns:1fr 1fr">
     <div class="card">
       <h3>Painel dos setores — pedidos ao vivo</h3>
-      <p class="sub">O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, a mesa, o caixa e o garçom veem na hora — e o alerta toca para quem está autorizado.</p>
+      <p class="sub" id="boardSub">O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, a mesa, o caixa e o garçom veem na hora — e o alerta toca para quem está autorizado.</p>
       <div id="ticketBoard" style="margin-top:10px"></div>
     </div>
     <div>
@@ -1718,8 +1718,149 @@ function updateStoreChrome(){
   const dlc = $("#demoLoginCard"); if(dlc) dlc.style.display = state.demo ? "" : "none";
   const pill = $("#caixaNome");
   if(pill) pill.textContent = state.demo ? rolePersona() : (state.team[0] ? state.team[0].name.split(" ")[0]+" ("+state.team[0].role+")" : "—");
-  const g = $("#droleGarcom"); if(g) g.textContent = (state.seg==="barbearia"||state.seg==="oficina") ? "Profissional" : "Garçom";
+  const g = $("#droleGarcom"); if(g) g.textContent = thirdRoleName();
   $$(".isoStoreName").forEach(e=>{ e.textContent = state.store.name; });
+  syncSegTexts();
+}
+/* ---------- textos de ajuda/exemplo 100% no tema do segmento ativo ---------- */
+function thirdRoleName(){
+  if(state.seg==="mercado") return "Estoquista";
+  if(state.seg==="barbearia"||state.seg==="oficina") return "Profissional";
+  return "Garçom";
+}
+const SEG_TEXTS = {
+  restaurante:{
+    agendaSub:"Serviços com duração, profissional e bloqueio automático de horário.",
+    unitsHint:'Unidades suportadas: <b>un</b> (unidade) · <b>kg/g</b> (peso, integração com balança) · <b>L/ml</b> (medida) · <b>m/cm</b> (comprimento) · <b>serviço</b> (valor aberto). O lojista define a unidade de cada produto no cadastro.',
+    npSub:"Pratos, bebidas e sobremesas da casa — cada item com preço, categoria e setor de preparo.",
+    npNamePh:"Ex.: Moqueca de peixe", npCatPh:"Ex.: Pratos",
+    teamSub:'Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e mesas), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.',
+    role4:"Garçom",
+    expSub:"Gás, gelo, motoboy, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.",
+    expDescPh:"Ex.: Gás, gelo, motoboy, hortifruti", mmReasonPh:"Ex.: troco, motoboy, fornecedor",
+    cbRouteSub:'Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e no cardápio digital. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (bebida → Bar, prato → Cozinha), e no recibo o combo sai agrupado com os itens listados abaixo.',
+    cbSegHint:"No restaurante, o clássico é prato + bebida + sobremesa num preço fechado — o combo sai como um item só na comanda e no caixa.",
+    cbNamePh:"Ex.: Combo Casal, Combo Almoço da Casa", cbDescPh:"Ex.: Prato + bebida + sobremesa com preço fechado",
+    dlRestoreList:"venda, mesa ou agendamento", scNoteScope:"do PDV e das mesas",
+    hwHeadSub:"Impressoras, leitores e gaveta da loja — cada setor (cozinha, bar, confeitaria) recebe só os seus itens, na sua impressora, com som de alerta para quem precisa ouvir.",
+    hwAgentDevs:"impressoras térmicas, leitores e gavetas",
+    devSub:"Detecte, salve com nome e setor (ex.: “Impressora Cozinha”, “Impressora Bar”), acompanhe o status e teste quando quiser.",
+    ndNamePh:"Ex.: Impressora Confeitaria",
+    routeSub:"Cada categoria de produto pertence a um setor. Ao fechar um pedido — mesa, balcão ou cardápio digital — o sistema separa os itens e manda cada grupo para a impressora do setor, sozinho.",
+    boardSub:'O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, a mesa, o caixa e o garçom veem na hora — e o alerta toca para quem está autorizado.',
+    menuHeadSub:"Link público da loja: o cliente monta o pedido no celular e ele cai direto na cozinha — sem baixar aplicativo.",
+    menuDestLabel:"Mesa / entrega", qrBtn:"QR Code da mesa",
+    qrCardTitle:"📱 QR Code nas mesas — pedir e pagar sem chamar o garçom",
+    qrCardSub:'Um QR por mesa: o cliente aponta a câmera, o cardápio abre <b>já vinculado à mesa dele</b>, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai na cozinha e na comanda da mesa ao mesmo tempo.',
+    waCardSub:'Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O garçom digital e o atendimento automático usam a mesma extensão.',
+    waCardHint:"Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status na cozinha ou no delivery dispara o aviso sozinho.",
+    menuSendBtn:"Enviar pedido para a cozinha"
+  },
+  mercado:{
+    agendaSub:"Serviços com duração, profissional e bloqueio automático de horário.",
+    unitsHint:'Unidades suportadas: <b>un</b> (unidade) · <b>kg/g</b> (peso, integração com balança) · <b>L/ml</b> (medida) · <b>m/cm</b> (comprimento) · <b>serviço</b> (valor aberto). O lojista define a unidade de cada produto no cadastro.',
+    npSub:"Produtos do mercado — cada item com preço, categoria, unidade (un, kg, L) e estoque.",
+    npNamePh:"Ex.: Queijo coalho", npCatPh:"Ex.: Laticínios",
+    teamSub:'Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e caixa), <b>Estoquista</b> (estoque e reposição). Senha esquecida? O dono reseta aqui e manda a nova na hora.',
+    role4:"Estoquista",
+    expSub:"Embalagens, gelo, frete, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.",
+    expDescPh:"Ex.: Embalagens, gelo, frete, hortifruti", mmReasonPh:"Ex.: troco, frete, fornecedor",
+    cbRouteSub:'Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e no cardápio digital. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (hortifruti → Hortifruti, frios → Açougue), e no recibo o combo sai agrupado com os itens listados abaixo.',
+    cbSegHint:"No mercado, o clássico é o kit: café da manhã, hortifruti da semana, cesta de limpeza — num preço fechado, o combo sai como um item só no PDV.",
+    cbNamePh:"Ex.: Kit Café da Manhã, Kit Hortifruti da Semana", cbDescPh:"Ex.: Itens do kit com preço fechado",
+    dlRestoreList:"venda ou encomenda", scNoteScope:"do PDV",
+    hwHeadSub:"Impressoras, balanças, leitores, câmeras e gaveta da loja — cada setor (açougue, hortifruti, caixa) recebe só os seus itens, com som de alerta para quem precisa ouvir.",
+    hwAgentDevs:"impressoras térmicas, balanças e leitores",
+    devSub:"Detecte, salve com nome e setor (ex.: “Balança do Açougue”, “Balança Hortifruti”), acompanhe o status e teste quando quiser.",
+    ndNamePh:"Ex.: Balança do Açougue",
+    routeSub:"Cada categoria de produto pertence a um setor. Ao fechar uma venda no PDV ou um pedido do cardápio digital, o sistema separa os itens e manda cada grupo para a impressora ou balança do setor, sozinho.",
+    boardSub:'O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, o caixa e o operador veem na hora — e o alerta toca para quem está autorizado.',
+    menuHeadSub:"Link público da loja: o cliente monta o pedido no celular e ele cai direto no caixa — sem baixar aplicativo.",
+    menuDestLabel:"Destino do pedido", qrBtn:"QR Code da loja",
+    qrCardTitle:"📱 QR Code na loja — pedir e pagar pelo celular",
+    qrCardSub:'Um QR no balcão e nas gôndolas: o cliente aponta a câmera, o cardápio abre, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai no caixa na hora.',
+    waCardSub:'Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O atendente digital e o atendimento automático usam a mesma extensão.',
+    waCardHint:"Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status no caixa ou no delivery dispara o aviso sozinho.",
+    menuSendBtn:"Enviar pedido para o caixa"
+  },
+  barbearia:{
+    agendaSub:"Serviços com duração, profissional e bloqueio automático de horário — a agenda da barbearia, sem choque de horários.",
+    unitsHint:'Unidades suportadas: <b>un</b> (produto) · <b>serviço</b> (valor aberto, com duração para a Agenda). O lojista define a unidade de cada item no cadastro.',
+    npSub:"Serviços e produtos da barbearia — serviços levam duração e entram na Agenda; produtos têm estoque.",
+    npNamePh:"Ex.: Corte social", npCatPh:"Ex.: Serviços",
+    teamSub:'Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e recepção), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.',
+    role4:"Barbeiro",
+    expSub:"Toalhas e lavanderia, lâminas, produtos, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.",
+    expDescPh:"Ex.: Toalhas, lâminas, produtos, café", mmReasonPh:"Ex.: troco, fornecedor, lavanderia",
+    cbRouteSub:'Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e na página de agendamento. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (serviço → Atendimento, produto → Recepção/Caixa), e no recibo o combo sai agrupado com os itens listados abaixo.',
+    cbSegHint:'Na barbearia, o clássico é corte + barba num preço fechado — se os itens têm duração, o combo vira <b>um serviço agendável só</b> na Agenda.',
+    cbNamePh:"Ex.: Corte + Barba, Combo VIP", cbDescPh:"Ex.: Corte + barba com preço fechado",
+    dlRestoreList:"venda ou agendamento", scNoteScope:"do PDV",
+    hwHeadSub:"Impressora e leitor da loja — o atendimento recebe os seus serviços e a recepção/caixa imprime os recibos, com som de alerta para quem precisa ouvir.",
+    hwAgentDevs:"impressoras térmicas e leitores de QR",
+    devSub:"Detecte, salve com nome e setor (ex.: “Impressora Recepção”), acompanhe o status e teste quando quiser.",
+    ndNamePh:"Ex.: Impressora Recepção",
+    routeSub:"Cada categoria pertence a um setor. Ao concluir um atendimento ou uma venda no caixa, o sistema separa os itens e manda cada grupo para a impressora do setor, sozinho.",
+    boardSub:'O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, a recepção e o profissional veem na hora — e o alerta toca para quem está autorizado.',
+    menuHeadSub:"Link público da loja: o cliente monta o pedido no celular e ele cai direto na cozinha — sem baixar aplicativo.",
+    menuDestLabel:"Mesa / entrega", qrBtn:"QR Code da mesa",
+    qrCardTitle:"📱 QR Code nas mesas — pedir e pagar sem chamar o garçom",
+    qrCardSub:'Um QR por mesa: o cliente aponta a câmera, o cardápio abre <b>já vinculado à mesa dele</b>, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai na cozinha e na comanda da mesa ao mesmo tempo.',
+    waCardSub:'Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O garçom digital e o atendimento automático usam a mesma extensão.',
+    waCardHint:"Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status na cozinha ou no delivery dispara o aviso sozinho.",
+    menuSendBtn:"Enviar pedido para a cozinha"
+  },
+  oficina:{
+    agendaSub:"Serviços com duração, profissional e bloqueio automático de horário — a agenda da oficina, sem choque de horários.",
+    unitsHint:'Unidades suportadas: <b>un</b> (peça) · <b>L/ml</b> (fluidos e lubrificantes) · <b>serviço</b> (valor aberto, com duração para a Agenda). O lojista define a unidade de cada item no cadastro.',
+    npSub:"Serviços e peças da oficina — serviços levam duração e entram na Agenda; peças têm estoque.",
+    npNamePh:"Ex.: Alinhamento 3D", npCatPh:"Ex.: Serviços",
+    teamSub:'Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e recepção), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.',
+    role4:"Mecânico",
+    expSub:"Peças emergenciais, frete, ferramentas, compra de última hora: registre a saída na hora e o fechamento já sai com o líquido certo.",
+    expDescPh:"Ex.: Peças, frete, ferramentas, óleo", mmReasonPh:"Ex.: troco, fornecedor, frete",
+    cbRouteSub:'Escolha 2 ou mais itens do catálogo, feche um <b>preço promocional</b> e o combo vira <b>um item vendável</b> no PDV e na página pública. Por dentro, o sistema explode os itens: cada um baixa do estoque e vai para o <b>seu setor</b> (serviço → Box de serviços, peça → Estoque/Peças), e no recibo o combo sai agrupado com os itens listados abaixo.',
+    cbSegHint:'Na oficina, o clássico é revisão + troca de óleo num preço fechado — se os itens têm duração, o combo vira <b>um serviço agendável só</b> na Agenda.',
+    cbNamePh:"Ex.: Revisão Completa, Kit Rodagem", cbDescPh:"Ex.: Revisão + troca de óleo com preço fechado",
+    dlRestoreList:"venda ou agendamento", scNoteScope:"do PDV",
+    hwHeadSub:"Impressora e leitor da loja — cada setor (box de serviços, estoque/peças, recepção) recebe só os seus itens, com som de alerta para quem precisa ouvir.",
+    hwAgentDevs:"impressoras térmicas e leitores",
+    devSub:"Detecte, salve com nome e setor (ex.: “Impressora de Ordens de Serviço”), acompanhe o status e teste quando quiser.",
+    ndNamePh:"Ex.: Impressora do Box 2",
+    routeSub:"Cada categoria pertence a um setor. Ao fechar uma ordem de serviço ou uma venda, o sistema separa os itens e manda cada grupo para a impressora do setor, sozinho.",
+    boardSub:'O setor acompanha os seus itens: <b>recebido → preparando → pronto</b>. Quando marca “pronto”, a recepção e o mecânico veem na hora — e o alerta toca para quem está autorizado.',
+    menuHeadSub:"Link público da loja: o cliente monta o pedido no celular e ele cai direto na cozinha — sem baixar aplicativo.",
+    menuDestLabel:"Mesa / entrega", qrBtn:"QR Code da mesa",
+    qrCardTitle:"📱 QR Code nas mesas — pedir e pagar sem chamar o garçom",
+    qrCardSub:'Um QR por mesa: o cliente aponta a câmera, o cardápio abre <b>já vinculado à mesa dele</b>, ele monta o pedido e <b>paga no próprio celular</b> (Pix ou cartão). O pedido cai na cozinha e na comanda da mesa ao mesmo tempo.',
+    waCardSub:'Os avisos de status do pedido (recebido → preparando → pronto → saiu para entrega) saem pela <b>extensão IMPERIUMTECH Connect</b>, instalada no navegador do computador ou celular do caixa e pareada com o WhatsApp Web da loja — sem robô de terceiros e sem custo por mensagem. O garçom digital e o atendimento automático usam a mesma extensão.',
+    waCardHint:"Instalação: no Chrome ou Edge, “Adicionar a extensão IMPERIUMTECH Connect” e parear com o QR Code da loja. A partir daí, cada mudança de status na cozinha ou no delivery dispara o aviso sozinho.",
+    menuSendBtn:"Enviar pedido para a cozinha"
+  }
+};
+function syncSegTexts(){
+  const T = SEG_TEXTS[state.seg] || SEG_TEXTS.restaurante;
+  const set = (id, html)=>{ const el = document.getElementById(id); if(el) el.innerHTML = html; };
+  const setT = (id, txt)=>{ const el = document.getElementById(id); if(el) el.textContent = txt; };
+  set("agendaSub", T.agendaSub); set("unitsHint", T.unitsHint);
+  set("npSub", T.npSub); set("teamSub", T.teamSub); set("expSub", T.expSub);
+  set("cbRouteSub", T.cbRouteSub); set("cbSegHint", T.cbSegHint);
+  set("hwHeadSub", T.hwHeadSub); set("hwAgentDevs", T.hwAgentDevs); set("devSub", T.devSub);
+  set("routeSub", T.routeSub); set("boardSub", T.boardSub);
+  set("menuHeadSub", T.menuHeadSub); set("qrCardSub", T.qrCardSub); set("waCardSub", T.waCardSub);
+  setT("dlRestoreList", T.dlRestoreList); setT("scNoteScope", T.scNoteScope);
+  setT("menuDestLabel", T.menuDestLabel); setT("qrCardTitle", T.qrCardTitle); setT("waCardHint", T.waCardHint);
+  setT("dlRoleWord", thirdRoleName()); setT("dlRoleChip", thirdRoleName());
+  const qb = $("#qrBtn"); if(qb) qb.textContent = T.qrBtn;
+  const msb = $("#menuSendBtn"); if(msb) msb.textContent = T.menuSendBtn;
+  const npn = $("#npName"); if(npn) npn.placeholder = T.npNamePh;
+  const npc = $("#npCat"); if(npc) npc.placeholder = T.npCatPh;
+  const ndn = $("#ndName"); if(ndn) ndn.placeholder = T.ndNamePh;
+  const cbn = $("#cbName"); if(cbn) cbn.placeholder = T.cbNamePh;
+  const cbd = $("#cbDesc"); if(cbd) cbd.placeholder = T.cbDescPh;
+  const exd = $("#expDesc"); if(exd) exd.placeholder = T.expDescPh;
+  const mmr = $("#mmReason"); if(mmr) mmr.placeholder = T.mmReasonPh;
+  const nr = $("#nuRole"); if(nr && nr.options.length>=4) nr.options[3].textContent = T.role4;
 }
 function seedTables(){
   state.tableAreas = [{key:"salao",name:"Salão"},{key:"varanda",name:"Varanda"},{key:"bar",name:"Área do bar"}];
@@ -1938,7 +2079,8 @@ $("#avulsoBtn").addEventListener("click",()=>{
     closeModal("qtyModal"); renderCart(); toast("Item avulso adicionado: "+money(v));
   };
   $("#qtyTitle").textContent = nome;
-  $("#qtySub").textContent = "O dono pode lançar qualquer produto ou serviço avulso (ex.: oficina, reparo, taxa) direto no caixa.";
+  const AVULSO_EX = {restaurante:"couvert, taxa de entrega, adicional", mercado:"gelo, sacola, taxa de entrega", barbearia:"taxa, produto avulso, adicional", oficina:"reparo, taxa, serviço avulso"};
+  $("#qtySub").textContent = "O dono pode lançar qualquer produto ou serviço avulso (ex.: "+(AVULSO_EX[state.seg]||AVULSO_EX.restaurante)+") direto no caixa.";
   $("#qtyLabel").textContent = "Valor (R$)";
   $("#qtyIn").value=""; $("#qtyCalc").textContent="Digite o valor combinado com o cliente.";
   openModal("qtyModal"); setTimeout(()=>$("#qtyIn").focus(),80);
@@ -2191,15 +2333,21 @@ function renderMenu(){
   $("#menuStoreName").textContent = state.store.name;
   $("#menuStoreMeta").textContent = state.store.hours+" · "+state.store.addr;
   const mt = $("#menuTable"); const curDest = mt.value;
-  mt.innerHTML = '<option value="Balcão/retirada">Retirada no balcão</option>' + state.tables.map(t=>'<option value="Mesa '+t.n+'">Mesa '+t.n+' ('+areaName(t.area)+')</option>').join("") + '<option value="Entrega">Entrega (delivery)</option>';
+  mt.innerHTML = '<option value="Balcão/retirada">Retirada no balcão</option>' + (state.seg==="restaurante" ? state.tables.map(t=>'<option value="Mesa '+t.n+'">Mesa '+t.n+' ('+areaName(t.area)+')</option>').join("") : "") + '<option value="Entrega">Entrega (delivery)</option>';
   if(Array.prototype.some.call(mt.options,o=>o.value===curDest)) mt.value = curDest;
   const qg = $("#tableQrGrid");
   if(qg){
-    qg.innerHTML = state.tables.slice(0,12).map(t=>{
-      let cells=""; for(let i=0;i<25;i++){ cells += ((i*7+t.n*3)%4===0 || i%6===0) ? "<i></i>" : '<i style="background:transparent"></i>'; }
-      return '<div class="tcard free" style="min-height:0"><div class="qrmini">'+cells+'</div><span class="n" style="font-size:16px;margin-top:8px">Mesa '+t.n+'</span><span class="tm">'+areaName(t.area)+' · peça e pague pelo celular</span><button type="button" class="btn sm gold" data-qrtable="'+t.n+'" style="margin-top:8px">Simular pedido desta mesa</button></div>';
-    }).join("");
-    $$("#tableQrGrid [data-qrtable]").forEach(b=>b.addEventListener("click",()=>{ pubDest = "Mesa "+b.dataset.qrtable; pubDoneMsg = ""; renderPublic(); showView("publica"); toast("Página pública aberta como Mesa "+b.dataset.qrtable+" — é o QR desta mesa: o cliente monta o pedido e envia; cai na cozinha e na comanda da mesa."); }));
+    if(state.seg==="restaurante"){
+      qg.innerHTML = state.tables.slice(0,12).map(t=>{
+        let cells=""; for(let i=0;i<25;i++){ cells += ((i*7+t.n*3)%4===0 || i%6===0) ? "<i></i>" : '<i style="background:transparent"></i>'; }
+        return '<div class="tcard free" style="min-height:0"><div class="qrmini">'+cells+'</div><span class="n" style="font-size:16px;margin-top:8px">Mesa '+t.n+'</span><span class="tm">'+areaName(t.area)+' · peça e pague pelo celular</span><button type="button" class="btn sm gold" data-qrtable="'+t.n+'" style="margin-top:8px">Simular pedido desta mesa</button></div>';
+      }).join("");
+      $$("#tableQrGrid [data-qrtable]").forEach(b=>b.addEventListener("click",()=>{ pubDest = "Mesa "+b.dataset.qrtable; pubDoneMsg = ""; renderPublic(); showView("publica"); toast("Página pública aberta como Mesa "+b.dataset.qrtable+" — é o QR desta mesa: o cliente monta o pedido e envia; cai na cozinha e na comanda da mesa."); }));
+    } else {
+      let cells=""; for(let i=0;i<25;i++){ cells += ((i*7+3)%4===0 || i%6===0) ? "<i></i>" : '<i style="background:transparent"></i>'; }
+      qg.innerHTML = '<div class="tcard free" style="min-height:0"><div class="qrmini">'+cells+'</div><span class="n" style="font-size:16px;margin-top:8px">QR da loja</span><span class="tm">Balcão e gôndolas · peça e pague pelo celular</span><button type="button" class="btn sm gold" data-qrdest="Balcão/retirada" style="margin-top:8px">Simular pedido pelo QR da loja</button></div>';
+      $$("#tableQrGrid [data-qrdest]").forEach(b=>b.addEventListener("click",()=>{ pubDest = b.dataset.qrdest; pubDoneMsg = ""; renderPublic(); showView("publica"); toast("Página pública aberta pelo QR da loja — é assim que o cliente vê: monta o pedido e envia; cai direto no caixa."); }));
+    }
   }
   const cats = ["Todos"].concat(Array.from(new Set(state.products.map(p=>p.cat))));
   if(activeCombos().length && !cats.includes("Combos")) cats.push("Combos");
@@ -2252,7 +2400,7 @@ $("#menuSendBtn").addEventListener("click",()=>{
   routeSectors(explodeItems(state.menuCart), "Cardápio digital · "+dest);
   alertRoles("novo");
   state.menuCart = []; renderMenuTotals(); renderKds();
-  toast(dest==="Entrega" ? "Pedido de entrega enviado! Acompanhe o status e o entregador na tela da Cozinha 🛵" : "Pedido enviado! A cozinha já recebeu 🍳");
+  toast(dest==="Entrega" ? (state.seg==="restaurante" ? "Pedido de entrega enviado! Acompanhe o status e o entregador na tela da Cozinha 🛵" : "Pedido de entrega enviado! Acompanhe o status e o entregador no caixa 🛵") : (state.seg==="restaurante" ? "Pedido enviado! A cozinha já recebeu 🍳" : "Pedido enviado! O caixa já recebeu 🧾"));
 });
 
 /* ---------- página pública da loja (link próprio por loja) ---------- */
@@ -2536,12 +2684,14 @@ $("#stSave").addEventListener("click",()=>{
 
 /* módulos */
 function renderModules(){
+  const DESC_OVR = {mercado:{cardapio:"Link público + QR Code no balcão e nas gôndolas; pedido cai no caixa.", delivery:"Pedidos de entrega com status em tempo real e entregador responsável, acompanhados no caixa."}};
   $("#moduleList").innerHTML = MODULE_DEFS.map(m=>{
     const fits = m.segs.includes(state.seg);
     const on = !!state.modules[m.key];
-    return '<div class="switchrow" style="'+(fits?"":"opacity:.55")+'"><div class="tx"><b>'+m.name+'</b> '+(fits?'<span class="tag g">combina com '+seg().label+'</span>':'<span class="tag">fora do segmento</span>')+'<p>'+m.desc+'</p></div><span class="sw"><input type="checkbox" data-mod="'+m.key+'" '+(on?"checked":"")+(fits?"":" disabled")+' /><i></i></span></div>';
+    const desc = (DESC_OVR[state.seg] && DESC_OVR[state.seg][m.key]) || m.desc;
+    return '<div class="switchrow" style="'+(fits?"":"opacity:.55")+'"><div class="tx"><b>'+m.name+'</b> '+(fits?'<span class="tag g">combina com '+seg().label+'</span>':'<span class="tag">fora do segmento</span>')+'<p>'+desc+'</p></div><span class="sw"><input type="checkbox" data-mod="'+m.key+'" '+(on?"checked":"")+(fits?"":" disabled")+' /><i></i></span></div>';
   }).join("") +
-  '<div class="switchrow"><div class="tx"><b>Modo de fechamento das mesas</b><p>Restaurante e lanchonete escolhem: cobrar <b>por pedido</b> ou só <b>ao encerrar a mesa</b>.</p></div><select id="mesaModeSel" style="border:1.5px solid var(--line2);border-radius:10px;padding:10px;background:var(--surface)"><option value="close"'+(state.mesaMode==="close"?" selected":"")+'>Ao encerrar a mesa</option><option value="order"'+(state.mesaMode==="order"?" selected":"")+'>Por pedido</option></select></div>';
+  (state.seg==="restaurante" ? '<div class="switchrow"><div class="tx"><b>Modo de fechamento das mesas</b><p>Restaurante e lanchonete escolhem: cobrar <b>por pedido</b> ou só <b>ao encerrar a mesa</b>.</p></div><select id="mesaModeSel" style="border:1.5px solid var(--line2);border-radius:10px;padding:10px;background:var(--surface)"><option value="close"'+(state.mesaMode==="close"?" selected":"")+'>Ao encerrar a mesa</option><option value="order"'+(state.mesaMode==="order"?" selected":"")+'>Por pedido</option></select></div>' : "");
   $$("#moduleList [data-mod]").forEach(sw=>sw.addEventListener("change",()=>{
     state.modules[sw.dataset.mod] = sw.checked; syncModuleNav(); renderTables();
     toast("Módulo "+(sw.checked?"ativado":"desativado"));
@@ -2703,11 +2853,18 @@ function renderIA(){
   const low = state.products.filter(p=>p.unit==="un"&&p.stock<=5);
   const total = state.sales.reduce((s,x)=>s+x.total,0);
   const topName = state.products[0] ? state.products[0].name : "seu carro-chefe";
+  const IA_TXT = {
+    restaurante:{peak:"suas vendas concentram entre 11h30 e 13h. Deixe a equipe reforçada e o cardápio com o combo do dia em destaque nesse período.", upsell:"Oferecer sobremesa/bebida no fechamento pode elevar ~12% — o sistema sugere automaticamente no PDV.", channel:"no cardápio digital"},
+    mercado:{peak:"suas vendas concentram entre 8h e 10h. Deixe a equipe reforçada e a entrada da loja com o kit do dia em destaque nesse período.", upsell:"Oferecer um item de impulso no caixa (chocolate, bala, pilha) pode elevar ~12% — o sistema sugere automaticamente no PDV.", channel:"no cardápio digital"},
+    barbearia:{peak:"seus atendimentos concentram entre 10h e 12h. Deixe a equipe reforçada e a agenda com os horários livres em destaque nesse período.", upsell:"Oferecer um produto de bancada (pomada, balm) ao finalizar o atendimento pode elevar ~12% — o sistema sugere automaticamente no PDV.", channel:"na página de agendamento"},
+    oficina:{peak:"seus atendimentos concentram entre 9h e 11h. Deixe a equipe reforçada e a agenda com os horários livres em destaque nesse período.", upsell:"Oferecer um serviço adicional (lavagem, higienização) ao finalizar pode elevar ~12% — o sistema sugere automaticamente no PDV.", channel:"na página pública da loja"}
+  };
+  const T = IA_TXT[state.seg] || IA_TXT.restaurante;
   const cards = [
-    "<b>Horário de ouro:</b> suas vendas concentram entre 11h30 e 13h. Deixe a equipe reforçada e o cardápio com o combo do dia em destaque nesse período.",
+    "<b>Horário de ouro:</b> "+T.peak,
     "<b>Estoque inteligente:</b> "+(low.length ? low.map(p=>p.name+" ("+p.stock+" un)").join(", ")+" está(ão) acabando — reponha antes do fim de semana para não perder venda." : "nenhum item crítico agora. Continue monitorando os itens de maior giro."),
-    "<b>Ticket médio:</b> hoje em "+(state.sales.length?money(total/state.sales.length):"—")+". Oferecer sobremesa/bebida no fechamento pode elevar ~12% — o sistema sugere automaticamente no PDV.",
-    "<b>Mais vendido:</b> "+topName+" lidera o catálogo. Crie um combo com ele no cardápio digital e fixe nos stories para surfar o item que já vende sozinho."
+    "<b>Ticket médio:</b> hoje em "+(state.sales.length?money(total/state.sales.length):"—")+". "+T.upsell,
+    "<b>Mais vendido:</b> "+topName+" lidera o catálogo. Crie um combo com ele "+T.channel+" e fixe nos stories para surfar o item que já vende sozinho."
   ];
   $("#iaList").innerHTML = cards.map(c=>'<div class="insight">'+c+'</div>').join("");
 }
@@ -2983,7 +3140,7 @@ function openMoney(mode){
   mmMode = mode;
   const cfg = {
     desconto:{t:"🏷️ Desconto na venda", sub:"Percentual sobre o total da venda (após cupom e fidelidade).", l:"Desconto (%)", v: state.discPct? String(Math.round(state.discPct*100)) : "", h:"Atalho de teclado: F4. Vale até a venda ser concluída.", reason:false},
-    acrescimo:{t:"➕ Acréscimo na venda", sub:"Percentual extra sobre o total — ex.: taxa de serviço de mesa.", l:"Acréscimo (%)", v: state.surPct? String(Math.round(state.surPct*100)) : "", h:"Vale até a venda ser concluída.", reason:false},
+    acrescimo:{t:"➕ Acréscimo na venda", sub:"Percentual extra sobre o total — ex.: "+({restaurante:"taxa de serviço de mesa", mercado:"taxa de entrega", barbearia:"taxa de serviço", oficina:"taxa de urgência"})[state.seg]+".", l:"Acréscimo (%)", v: state.surPct? String(Math.round(state.surPct*100)) : "", h:"Vale até a venda ser concluída.", reason:false},
     sangria:{t:"💸 Sangria de caixa", sub:"Retirada de dinheiro do caixa — entra nos gastos do fechamento do dia.", l:"Valor da sangria (R$)", v:"", h:"Atalho de teclado: F9.", reason:true},
     suprimento:{t:"💰 Suprimento de caixa", sub:"Entrada de dinheiro no caixa (troco, reforço de troco).", l:"Valor do suprimento (R$)", v:"", h:"Fica registrado no fechamento do dia, em Relatórios.", reason:true}
   }[mode];
@@ -3039,9 +3196,13 @@ $("#pdvFavs").addEventListener("click",e=>{
 /* painel de atalhos (por segmento) */
 function renderScPanel(){
   const nm = $("#scSegName"); if(nm) nm.textContent = seg().label;
-  const mk = defs => defs.map(d=>'<div class="switchrow"><div class="tx"><b>'+d.name+'</b>'+(d.kbd?' <span class="kbd">'+d.kbd+'</span>':"")+'<p>'+d.desc+'</p></div><span class="sw"><input type="checkbox" data-sctoggle="'+d.key+'" '+(scOn(d.key)?"checked":"")+' /><i></i></span></div>').join("");
+  const ACRESC_EX = {restaurante:"taxa de serviço de mesa", mercado:"taxa de entrega", barbearia:"taxa de serviço", oficina:"taxa de urgência"};
+  const mk = defs => defs.map(d=>{ const desc = d.key==="acrescimo" ? "Percentual extra sobre a venda — ex.: "+(ACRESC_EX[state.seg]||ACRESC_EX.restaurante)+"." : d.desc;
+    return '<div class="switchrow"><div class="tx"><b>'+d.name+'</b>'+(d.kbd?' <span class="kbd">'+d.kbd+'</span>':"")+'<p>'+desc+'</p></div><span class="sw"><input type="checkbox" data-sctoggle="'+d.key+'" '+(scOn(d.key)?"checked":"")+' /><i></i></span></div>'; }).join("");
   const a=$("#scPdvList"); if(a) a.innerHTML = mk(SC_DEFS);
-  const b=$("#scTableList"); if(b) b.innerHTML = mk(SC_TABLE_DEFS);
+  const showTables = state.seg==="restaurante";
+  const th=$("#scTableHead"); if(th) th.style.display = showTables ? "" : "none";
+  const b=$("#scTableList"); if(b){ b.style.display = showTables ? "" : "none"; b.innerHTML = mk(SC_TABLE_DEFS); }
   $$("[data-sctoggle]").forEach(sw=>sw.addEventListener("change",()=>{
     if(!state.sc || !Object.keys(state.sc).length) initScCfg(state.seg);
     state.sc[sw.dataset.sctoggle] = sw.checked;
@@ -3141,7 +3302,7 @@ document.addEventListener("keydown",e=>{
 
 /* ---------- porta de demonstração pública + papéis + leads ---------- */
 function rolePersona(){
-  const who = {admin:"Admin da loja (demo)", caixa:"Caixa (demo)", garcom:(state.seg==="barbearia"||state.seg==="oficina") ? "Profissional (demo)" : "Garçom (demo)"};
+  const who = {admin:"Admin da loja (demo)", caixa:"Caixa (demo)", garcom:thirdRoleName()+" (demo)"};
   return who[state.role] || who.admin;
 }
 const ROLE_VIEWS = {
@@ -3309,17 +3470,38 @@ const SCAN_POOL = {
   oficina:[{name:"Impressora térmica — box 2", type:"printer", sector:"box", conn:"Rede (Wi-Fi)"}]
 };
 let hw = {seg:null, devices:[], sectors:[], queue:[], tickets:[], lastRoute:null, seq:1, scanned:false};
-let sndCfg = {
-  "Garçom":{novo:false, pronto:true, conta:false},
-  "Caixa principal":{novo:true, pronto:true, conta:true},
-  "Gerente / Gestor":{novo:false, pronto:true, conta:true}
+const SND_BY_SEG = {
+  restaurante:{
+    "Garçom":{novo:false, pronto:true, conta:false},
+    "Caixa principal":{novo:true, pronto:true, conta:true},
+    "Gerente / Gestor":{novo:false, pronto:true, conta:true}},
+  mercado:{
+    "Operador de PDV":{novo:true, pronto:true, conta:true},
+    "Produção (açougue e hortifruti)":{novo:true, pronto:false, conta:false},
+    "Gerente / Gestor":{novo:false, pronto:true, conta:true}},
+  barbearia:{
+    "Profissional / Barbeiro":{novo:true, pronto:false, conta:false},
+    "Recepção / Caixa":{novo:true, pronto:true, conta:true},
+    "Gerente / Gestor":{novo:false, pronto:true, conta:true}},
+  oficina:{
+    "Mecânico / Profissional":{novo:true, pronto:false, conta:false},
+    "Recepção / Caixa":{novo:true, pronto:true, conta:true},
+    "Gerente / Gestor":{novo:false, pronto:true, conta:true}}
 };
-const EV_LABEL = {novo:"Pedido novo", pronto:"Item pronto", conta:"Conta fechada"};
+let sndCfg = JSON.parse(JSON.stringify(SND_BY_SEG.restaurante));
+const EV_LABELS = {
+  restaurante:{novo:"Pedido novo", pronto:"Item pronto", conta:"Conta fechada"},
+  mercado:{novo:"Pedido novo", pronto:"Item pronto", conta:"Venda fechada"},
+  barbearia:{novo:"Novo agendamento", pronto:"Atendimento concluído", conta:"Conta fechada"},
+  oficina:{novo:"Nova ordem de serviço", pronto:"Serviço concluído", conta:"Conta fechada"}
+};
+function evLabel(ev){ return (EV_LABELS[state.seg]||EV_LABELS.restaurante)[ev]; }
 
 function seedHardware(){
   const skey = (state.demo ? "demo-" : "") + state.seg;
   if(hw.seg === skey) return;
   hw.seg = skey; hw.scanned = false; hw.queue = []; hw.tickets = []; hw.lastRoute = null;
+  sndCfg = JSON.parse(JSON.stringify(SND_BY_SEG[state.seg]||SND_BY_SEG.restaurante));
   hw.devices = (DEVICES_BY_SEG[state.seg]||[]).map((d,i)=>Object.assign({id:"d"+(i+1)}, d));
   hw.sectors = (SECTORS_BY_SEG[state.seg]||[]).map(s=>Object.assign({}, s, {canStatus:true, printerId:null}));
   hw.sectors.forEach(s=>{ const dev = hw.devices.find(d=>d.type==="printer" && d.sector===s.key) || hw.devices.find(d=>d.type==="printer"); s.printerId = dev ? dev.id : null; });
@@ -3426,7 +3608,7 @@ $("#scanBtn").addEventListener("click",()=>{
   toast(pool.length+" dispositivo(s) detectado(s) 🔍");
 });
 $("#ndAdd").addEventListener("click",()=>{
-  const name = $("#ndName").value.trim(); if(!name){ toast("Dê um nome ao dispositivo (ex.: Impressora Bar)."); return; }
+  const name = $("#ndName").value.trim(); if(!name){ const exDev = (DEVICES_BY_SEG[state.seg]||[])[0]; toast("Dê um nome ao dispositivo (ex.: "+(exDev?exDev.name:"Impressora Caixa")+")."); return; }
   seedHardware();
   hw.devices.push({id:"d"+Date.now(), name, type:$("#ndType").value, sector:$("#ndSector").value||"caixa", conn:$("#ndConn").value, online:true, saved:true});
   $("#ndName").value = ""; renderDevices(); toast(name+" salvo na central de dispositivos ✅");
@@ -3455,7 +3637,7 @@ function ticketsFor(src){ return hw.tickets.filter(t=>t.src===src); }
 function renderSectorBoard(){
   seedHardware();
   const box = $("#ticketBoard"); if(!box) return;
-  if(!hw.tickets.length){ box.innerHTML = '<div class="empty">Nenhum pedido nos setores agora. Feche uma venda ou envie um pedido do cardápio para ver o roteamento acontecer.</div>'; return; }
+  if(!hw.tickets.length){ box.innerHTML = '<div class="empty">Nenhum pedido nos setores agora. Feche uma venda no PDV para ver o roteamento acontecer.</div>'; return; }
   box.innerHTML = hw.tickets.slice(0,8).map(t=>{
     const sec = hw.sectors.find(s=>s.key===t.sectorKey) || {canStatus:true};
     const idx = TSTEPS.indexOf(t.status);
@@ -3463,7 +3645,7 @@ function renderSectorBoard(){
     const next = idx<2 ? TSTEPS[idx+1] : null;
     return '<div class="ticket"><div class="th"><b>'+t.sectorName+'</b><span class="tag">'+t.src+'</span>'+(t.status==="pronto"?'<span class="tag g">pronto ✓</span>':"")+'</div>'+
     '<ul>'+t.items.map(i=>"<li>"+i.qty+"× "+i.name+"</li>").join("")+'</ul><div class="steps">'+steps+'</div>'+
-    (next ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn sm gold" data-tadv="'+t.id+'" type="button" '+(sec.canStatus?"":"disabled")+'>'+(sec.canStatus ? "Setor: marcar “"+next+"”" : "🔒 Setor sem permissão de status")+'</button><button class="btn sm" data-tadvx="'+t.id+'" type="button">Caixa principal: “'+next+'”</button></div>' : '<p class="hint" style="margin-top:6px">Entregue/avisado — mesa e caixa já refletem o status.</p>')+
+    (next ? '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn sm gold" data-tadv="'+t.id+'" type="button" '+(sec.canStatus?"":"disabled")+'>'+(sec.canStatus ? "Setor: marcar “"+next+"”" : "🔒 Setor sem permissão de status")+'</button><button class="btn sm" data-tadvx="'+t.id+'" type="button">Caixa principal: “'+next+'”</button></div>' : '<p class="hint" style="margin-top:6px">Entregue/avisado — '+({restaurante:"mesa e caixa", mercado:"o caixa", barbearia:"recepção e agenda", oficina:"a recepção"})[state.seg]+' já refletem o status.</p>')+
     '</div>';
   }).join("");
   $$("#ticketBoard [data-tadv]").forEach(b=>b.addEventListener("click",()=>advanceTicket(b.dataset.tadv)));
@@ -3478,7 +3660,7 @@ function advanceTicket(id){
     const allDone = ticketsFor(t.src).every(x=>x.status==="pronto");
     if(allDone){ state.orders.forEach(o=>{ if(o.src===t.src || o.src.indexOf(t.src)===0 || t.src.indexOf(o.src)===0) o.status="done"; }); renderKds(); }
     if(state.activeTable && t.src==="Mesa "+state.activeTable) renderTableDetail();
-    toast(t.sectorName+": itens de "+t.src+" PRONTOS — garçom e caixa avisados 🔔");
+    toast(t.sectorName+": itens de "+t.src+" PRONTOS — "+({restaurante:"garçom e caixa", mercado:"operador e caixa", barbearia:"profissional e recepção", oficina:"mecânico e recepção"})[state.seg]+" avisados 🔔");
   } else toast(t.sectorName+": "+t.src+" agora está “"+t.status+"”");
   renderSectorBoard(); renderSectors(); renderTableDetail();
 }
@@ -3504,16 +3686,19 @@ function playPattern(ev){
 function alertRoles(ev){
   const roles = Object.keys(sndCfg).filter(r=>sndCfg[r][ev]);
   const log = $("#sndLog");
-  if(!roles.length){ if(log) log.textContent = "Alerta “"+EV_LABEL[ev]+"” não tocou: nenhuma função está autorizada a ouvi-lo (ative na matriz acima)."; return; }
+  if(!roles.length){ if(log) log.textContent = "Alerta “"+evLabel(ev)+"” não tocou: nenhuma função está autorizada a ouvi-lo (ative na matriz acima)."; return; }
   playPattern(ev);
-  const msg = "🔔 “"+EV_LABEL[ev]+"” tocou agora para: "+roles.join(", ")+" · "+new Date().toLocaleTimeString("pt-BR");
+  const msg = "🔔 “"+evLabel(ev)+"” tocou agora para: "+roles.join(", ")+" · "+new Date().toLocaleTimeString("pt-BR");
   if(log) log.textContent = msg;
 }
-$$("[data-sndtest]").forEach(b=>b.addEventListener("click",()=>{ alertRoles(b.dataset.sndtest); const roles = Object.keys(sndCfg).filter(r=>sndCfg[r][b.dataset.sndtest]); toast(roles.length ? "Teste: som de “"+EV_LABEL[b.dataset.sndtest]+"” tocando para "+roles.join(", ") : "Nenhuma função recebe este alerta — ative na matriz."); }));
+$$("[data-sndtest]").forEach(b=>b.addEventListener("click",()=>{ alertRoles(b.dataset.sndtest); const roles = Object.keys(sndCfg).filter(r=>sndCfg[r][b.dataset.sndtest]); toast(roles.length ? "Teste: som de “"+evLabel(b.dataset.sndtest)+"” tocando para "+roles.join(", ") : "Nenhuma função recebe este alerta — ative na matriz."); }));
 function renderSnd(){
   const tb = $("#sndTable tbody"); if(!tb) return;
-  tb.innerHTML = Object.keys(sndCfg).map(r=>'<tr><td><b>'+r+'</b></td>'+["novo","pronto","conta"].map(ev=>'<td><input type="checkbox" data-snd="'+r+"|"+ev+'" '+(sndCfg[r][ev]?"checked":"")+' aria-label="'+r+" ouve "+EV_LABEL[ev]+'" /></td>').join("")+"</tr>").join("");
-  $$("#sndTable [data-snd]").forEach(cb=>cb.addEventListener("change",()=>{ const parts = cb.dataset.snd.split("|"); sndCfg[parts[0]][parts[1]] = cb.checked; toast(parts[0]+(cb.checked?" agora ouve":" não ouve mais")+" o alerta “"+EV_LABEL[parts[1]]+"”"); }));
+  const ths = $$("#sndTable thead th");
+  ["novo","pronto","conta"].forEach((ev,i)=>{ if(ths[i+1]) ths[i+1].textContent = evLabel(ev); });
+  $$("[data-sndtest]").forEach(b=>{ b.textContent = "🔔 "+evLabel(b.dataset.sndtest); });
+  tb.innerHTML = Object.keys(sndCfg).map(r=>'<tr><td><b>'+r+'</b></td>'+["novo","pronto","conta"].map(ev=>'<td><input type="checkbox" data-snd="'+r+"|"+ev+'" '+(sndCfg[r][ev]?"checked":"")+' aria-label="'+r+" ouve "+evLabel(ev)+'" /></td>').join("")+"</tr>").join("");
+  $$("#sndTable [data-snd]").forEach(cb=>cb.addEventListener("change",()=>{ const parts = cb.dataset.snd.split("|"); sndCfg[parts[0]][parts[1]] = cb.checked; toast(parts[0]+(cb.checked?" agora ouve":" não ouve mais")+" o alerta “"+evLabel(parts[1])+"”"); }));
 }
 
 /* init do módulo + gancho no render geral */
