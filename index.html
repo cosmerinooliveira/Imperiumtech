@@ -426,6 +426,12 @@ body.demo .demo-banner .chip{min-height:30px;padding:3px 10px;font-size:12.5px}
 .cred-line code{font-family:"IBM Plex Mono",monospace;background:var(--surface);border:1px solid var(--line2);border-radius:8px;padding:2px 10px;font-weight:600;color:var(--ink);font-size:14px}
 .cred-box p{margin:9px 0 0;font-size:14px;line-height:1.5}
 .login-err{display:none;margin-top:12px;background:var(--redsoft);color:var(--red);border-radius:10px;padding:10px 12px;font-size:13.5px;font-weight:700;line-height:1.45}
+/* ---------- olhinho mostrar/ocultar senha ---------- */
+.pwrap{position:relative}
+.pwrap input{padding-right:52px !important}
+.peye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:40px;height:40px;border:0;border-radius:10px;background:transparent;font-size:18px;line-height:1;display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer}
+.peye:active{background:var(--surface2)}
+.linklike{background:none;border:0;color:var(--gold2);font-weight:700;cursor:pointer;font-size:inherit;padding:0;text-decoration:underline;font-family:inherit}
 /* ---------- blindagem visual da demo: marca d'água + sem seleção ---------- */
 #demoWm{display:none}
 body.demo #demoWm{display:block;position:fixed;inset:0;z-index:58;pointer-events:none;background-repeat:repeat;background-size:360px 200px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='200'%3E%3Ctext x='180' y='104' text-anchor='middle' font-family='Arial,Helvetica,sans-serif' font-size='16' font-weight='700' letter-spacing='1' fill='%23808080' fill-opacity='0.14' transform='rotate(-20 180 100)'%3EDEMONSTRAÇÃO · DADOS FICTÍCIOS%3C/text%3E%3C/svg%3E")}
@@ -622,7 +628,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
     </div>
   </div>
 
-  <div style="text-align:center;margin-top:22px"><button class="btn sm ghost" id="gateOwner" type="button">🔐 Sou o dono do sistema — Super Admin (com a senha do dono)</button></div>
+  <div style="text-align:center;margin-top:22px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+    <button class="btn sm ghost" id="gateClient" type="button">🏪 Já sou cliente — entrar na minha loja</button>
+    <button class="btn sm ghost" id="gateOwner" type="button">🔐 Sou o dono do sistema — Super Admin</button>
+  </div>
 </section>
 
 <!-- ============ LOGIN DA DEMONSTRAÇÃO ============ -->
@@ -643,11 +652,90 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <p><b>👉 Use o usuário e a senha demo mostrados acima</b> para entrar — os campos já vêm preenchidos, é só tocar em entrar.</p>
       </div>
       <div class="field" style="margin-top:16px"><label for="lgUser">Usuário</label><input id="lgUser" value="demo" autocomplete="off" /></div>
-      <div class="field" style="margin-top:10px"><label for="lgPass">Senha</label><input id="lgPass" type="password" value="demo" autocomplete="off" /></div>
+      <div class="field" style="margin-top:10px"><label for="lgPass">Senha</label><div class="pwrap"><input id="lgPass" type="password" value="demo" autocomplete="off" /><button class="peye" type="button" data-eye="lgPass" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
       <p class="login-err" id="lgError">Usuário ou senha diferentes do demo. Confira o quadro dourado acima: usuário <b>demo</b>, senha <b>demo</b>.</p>
       <button class="btn gold block" id="lgEnter" type="button" style="margin-top:16px;width:100%">Entrar na demonstração →</button>
       <button class="btn ghost block" id="lgBack" type="button" style="margin-top:8px;width:100%">← Voltar e escolher outro segmento</button>
       <p class="hint" style="margin-top:14px;text-align:center">Ambiente de demonstração: dados 100% fictícios, exibidos com marca d'água e apagados ao sair. Nenhuma informação real é pedida nem salva.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOGIN DO SUPER ADMIN (dono do sistema) ============ -->
+<section class="view" id="view-ownerlogin">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="login-ava" style="background:#191104">👑</div>
+        <div>
+          <span class="lg-seg">Acesso restrito · Super Admin</span>
+          <b>Login do dono do sistema</b>
+          <span>Entre com o seu e-mail e a <b>sua senha do sistema</b> — nunca a senha da sua conta Google.</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:16px"><label for="owEmail">E-mail</label><input id="owEmail" type="email" value="cosmesantana.hnd@gmail.com" autocomplete="username" /></div>
+      <div class="field" style="margin-top:10px"><label for="owPass">Senha do sistema</label><div class="pwrap"><input id="owPass" type="password" autocomplete="current-password" placeholder="Sua senha do sistema" /><button class="peye" type="button" data-eye="owPass" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      <p class="login-err" id="owError"></p>
+      <button class="btn gold block" id="owEnter" type="button" style="margin-top:16px;width:100%">Entrar no Super Admin →</button>
+      <button class="btn ghost block" id="owBack" type="button" style="margin-top:8px;width:100%">← Voltar</button>
+      <p class="hint" style="margin-top:14px;text-align:center">Esqueceu a senha que criou? <button class="linklike" id="owRestore" type="button">Restaurar acesso neste aparelho</button></p>
+      <div id="owRestoreBox" style="display:none" class="note">
+        <b>Restaurar acesso neste aparelho</b><br/>Apaga a senha que você criou <b>neste navegador</b> e volta a aceitar a <b>senha temporária</b> que você recebeu fora da página — ao entrar com ela, a troca por uma senha nova é obrigatória de novo.
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <button class="btn sm danger" id="owRestoreYes" type="button">Sim, restaurar</button>
+          <button class="btn sm ghost" id="owRestoreNo" type="button">Cancelar</button>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:14px">🔒 <b>Como funciona neste modelo:</b> a senha que você criar fica guardada com hash (SHA-256) <b>só neste navegador</b> — vale neste aparelho. Na produção, o acesso vira login real no servidor (Supabase Auth): vale em qualquer aparelho, o primeiro acesso chega como convite seguro no seu e-mail e dá até pra entrar com o botão “Entrar com Google”, sem senha guardada no sistema.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LOGIN DO LOJISTA / USUÁRIO ============ -->
+<section class="view" id="view-userlogin">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="login-ava" style="background:#191104">🏪</div>
+        <div>
+          <span class="lg-seg">Área do cliente</span>
+          <b>Entrar na minha loja</b>
+          <span>Use o e-mail e a senha do seu acesso IMPERIUMTECH. Você enxerga <b>somente a sua loja</b>.</span>
+        </div>
+      </div>
+      <div class="cred-box">
+        🧪 <b>Acesso do modelo — lojista de teste</b>
+        <div class="cred-line"><span>E-mail: <code>dono@sabordaserra.com.br</code></span><span>Senha temporária: <code>loja2026</code></span></div>
+        <p>Entrando com a temporária, o sistema <b>obriga a criar a sua senha</b> antes de abrir o painel — o mesmo ciclo do cliente real. Depois, entre direto com a senha que você criou.</p>
+      </div>
+      <div class="field" style="margin-top:16px"><label for="usEmail">E-mail</label><input id="usEmail" type="email" autocomplete="username" placeholder="seu e-mail de acesso" /></div>
+      <div class="field" style="margin-top:10px"><label for="usPass">Senha</label><div class="pwrap"><input id="usPass" type="password" autocomplete="current-password" placeholder="Sua senha" /><button class="peye" type="button" data-eye="usPass" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      <p class="login-err" id="usError"></p>
+      <button class="btn gold block" id="usEnter" type="button" style="margin-top:16px;width:100%">Entrar na minha loja →</button>
+      <button class="btn ghost block" id="usBack" type="button" style="margin-top:8px;width:100%">← Voltar</button>
+      <p class="hint" style="margin-top:14px">🔒 <b>Neste modelo,</b> a senha que você criar vale <b>neste navegador</b> (guardada com hash). Na produção, o convite de primeiro acesso e a redefinição chegam <b>no seu e-mail</b>, com link seguro — e a senha vale em qualquer aparelho.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TROCA OBRIGATÓRIA DE SENHA (primeiro acesso) ============ -->
+<section class="view" id="view-forcechange">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-head">
+        <div class="login-ava" style="background:#191104">🔑</div>
+        <div>
+          <span class="lg-seg">Primeiro acesso · troca obrigatória</span>
+          <b id="fcTitle">Crie a sua senha</b>
+          <span id="fcSub">Você entrou com uma senha temporária. Crie agora a sua senha definitiva — ela é só sua: nem o suporte enxerga.</span>
+        </div>
+      </div>
+      <div class="field" style="margin-top:16px"><label for="fcNew">Nova senha</label><div class="pwrap"><input id="fcNew" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" /><button class="peye" type="button" data-eye="fcNew" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      <div class="field" style="margin-top:10px"><label for="fcConfirm">Confirmar nova senha</label><div class="pwrap"><input id="fcConfirm" type="password" autocomplete="new-password" placeholder="Repita a nova senha" /><button class="peye" type="button" data-eye="fcConfirm" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      <p class="hint" style="margin-top:10px">Regras: <b>mínimo de 8 caracteres</b> · <b>diferente da senha temporária</b> · os dois campos <b>iguais</b>. Use o olhinho 👁 para conferir o que digitou.</p>
+      <p class="login-err" id="fcErr"></p>
+      <button class="btn gold block" id="fcSave" type="button" style="margin-top:16px;width:100%">Salvar minha senha e entrar →</button>
+      <button class="btn ghost block" id="fcCancel" type="button" style="margin-top:8px;width:100%">Cancelar e voltar</button>
     </div>
   </div>
 </section>
@@ -889,7 +977,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <p class="sub">Entre com o usuário <b>demo</b> e a senha <b>demo</b> para alternar a visão por função desta loja — Admin da loja, Caixa ou <span id="dlRoleWord">Garçom</span>. Cada função só enxerga as telas do seu trabalho, e sempre <b>somente os dados desta loja-demo</b>: nada das outras lojas aparece, em nenhuma função.</p>
       <div class="frow" style="margin-top:12px">
         <div class="field"><label for="dlUser">Usuário</label><input id="dlUser" value="demo" autocomplete="off" /></div>
-        <div class="field"><label for="dlPass">Senha</label><input id="dlPass" type="password" value="demo" autocomplete="off" /></div>
+        <div class="field"><label for="dlPass">Senha</label><div class="pwrap"><input id="dlPass" type="password" value="demo" autocomplete="off" /><button class="peye" type="button" data-eye="dlPass" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
       </div>
       <button class="btn gold" id="dlEnter" type="button">Entrar na demonstração</button>
       <div id="dlRoles" style="display:none;margin-top:14px">
@@ -904,6 +992,22 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <b>Bagunçou a demonstração?</b>
         <p class="hint" style="margin:4px 0 10px">Volte os dados fictícios desta loja ao estado inicial — quem testar depois (ou você mesmo) encontra tudo limpo de novo, sem herdar <span id="dlRestoreList">venda, mesa ou agendamento</span> de outro teste.</p>
         <button class="btn sm" id="dlRestore" type="button">↺ Restaurar demonstração</button>
+      </div>
+    </div>
+    <div class="card" id="myPassCard" style="display:none;margin-bottom:16px">
+      <h3>🔑 Minha senha</h3>
+      <p class="sub">Troque a sua senha de acesso a esta loja quando quiser. A senha é <b>só sua</b> — nem o suporte da plataforma enxerga. Neste modelo, a nova senha vale <b>neste navegador</b> (guardada com hash).</p>
+      <div class="frow" style="margin-top:12px">
+        <div class="field"><label for="mpCur">Senha atual</label><div class="pwrap"><input id="mpCur" type="password" autocomplete="current-password" placeholder="Sua senha atual" /><button class="peye" type="button" data-eye="mpCur" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+        <div class="field"><label for="mpNew">Nova senha</label><div class="pwrap"><input id="mpNew" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" /><button class="peye" type="button" data-eye="mpNew" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="mpConf">Confirmar nova senha</label><div class="pwrap"><input id="mpConf" type="password" autocomplete="new-password" placeholder="Repita a nova senha" /><button class="peye" type="button" data-eye="mpConf" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+        <div class="field" style="display:flex;align-items:flex-end"><button class="btn gold" id="mpSave" type="button" style="width:100%">Trocar minha senha</button></div>
+      </div>
+      <p class="login-err" id="mpErr"></p>
+      <div style="border-top:1.5px dashed var(--line2);margin-top:14px;padding-top:12px">
+        <button class="btn sm ghost" id="mpLogout" type="button">🚪 Sair da minha loja</button>
       </div>
     </div>
     <div class="kpis">
@@ -993,7 +1097,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <h3>Equipe, funções e senhas</h3>
       <p class="sub" id="teamSub">Níveis: <b>Dono da loja</b> (tudo), <b>Gerente</b> (relatórios e caixa), <b>Operador</b> (PDV e mesas), <b>Profissional</b> (só a própria agenda). Senha esquecida? O dono reseta aqui e manda a nova na hora.</p>
       <div class="tblwrap" style="margin-top:12px"><table class="tbl" id="teamTable">
-        <thead><tr><th>Funcionário</th><th>Função</th><th>WhatsApp</th><th>Senha</th><th>Ações</th></tr></thead>
+        <thead><tr><th>Funcionário</th><th>Função</th><th>E-mail</th><th>WhatsApp</th><th>Status</th><th>Ações</th></tr></thead>
         <tbody></tbody>
       </table></div>
       <div class="frow" style="margin-top:14px">
@@ -1003,9 +1107,10 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       </div>
       <div class="frow">
         <div class="field"><label for="nuPhone">WhatsApp</label><input id="nuPhone" inputmode="tel" placeholder="(00) 90000-0000" /></div>
-        <div class="field"><label for="nuPass">Senha inicial</label><input id="nuPass" placeholder="Mínimo 6 caracteres" /></div>
+        <div class="field"><label for="nuEmail">E-mail / usuário (login)</label><input id="nuEmail" type="email" placeholder="nome@loja.com.br" /></div>
       </div>
-      <button class="btn gold" id="nuAdd" type="button">Adicionar à equipe</button>
+      <button class="btn gold" id="nuAdd" type="button">Adicionar à equipe e gerar acesso</button>
+      <p class="hint" style="margin-top:12px">🔑 <b>Regra de acesso da equipe:</b> ao criar um funcionário ou resetar a senha dele, o sistema gera uma <b>senha temporária</b> e abre a caixa de envio (<b>Copiar</b> ou <b>WhatsApp</b>). O funcionário entra com ela e <b>troca pela senha dele no primeiro acesso</b> — depois disso, nem o dono da loja enxerga a senha dele. Esqueceu? <b>Resetar senha</b> mata a antiga na hora e repete o ciclo.</p>
     </div>
   </div>
 
@@ -1145,7 +1250,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 <section class="view" id="view-admin">
   <div class="sec-head">
     <div><h2>Super Admin — IMPERIUMTECH</h2><p>Visão do dono do sistema: todas as lojas, planos, receita da plataforma e usuários. Só você enxerga esta área.</p></div>
-    <div class="sp"><span class="tag r">Acesso restrito · Super Admin</span></div>
+    <div class="sp"><span class="tag r">Acesso restrito · Super Admin</span><button class="btn sm" id="saLogout" type="button">🚪 Sair do Super Admin</button></div>
   </div>
   <div class="kpis">
     <div class="kpi"><span>Lojas ativas</span><b id="saStores">6</b><small>em 4 segmentos</small></div>
@@ -1169,6 +1274,25 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <tbody></tbody>
       </table></div>
     </div>
+    <div class="card" style="margin-top:16px">
+      <h3>➕ Nova loja / novo lojista</h3>
+      <p class="sub">Cadastre o dono da loja: o <b>e-mail dele vira o login</b>. Ao salvar, o sistema gera uma <b>senha temporária</b> e abre a caixa de envio (Copiar ou WhatsApp, com o link do sistema, o e-mail e a temporária) — e a <b>troca por uma senha própria é obrigatória no primeiro acesso</b> do lojista. Na produção, esse convite chega direto no e-mail dele, com link seguro.</p>
+      <div class="frow" style="margin-top:12px">
+        <div class="field"><label for="nsOwner">Nome do dono</label><input id="nsOwner" placeholder="Nome completo do lojista" /></div>
+        <div class="field"><label for="nsEmail">E-mail (será o login)</label><input id="nsEmail" type="email" placeholder="dono@loja.com.br" /></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="nsPhone">WhatsApp</label><input id="nsPhone" inputmode="tel" placeholder="(00) 90000-0000" /></div>
+        <div class="field"><label for="nsStore">Nome da loja</label><input id="nsStore" placeholder="Ex.: Padaria do Bairro" /></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="nsSeg">Segmento</label>
+          <select id="nsSeg"><option value="restaurante">🍽️ Restaurante / Lanchonete</option><option value="mercado">🛒 Mercado / Loja</option><option value="barbearia">✂️ Barbearia / Salão</option><option value="oficina">🔧 Oficina / Serviços</option></select></div>
+        <div class="field"><label for="nsPlan">Plano</label>
+          <select id="nsPlan"><option>Start</option><option selected>Pro</option><option>Império</option></select></div>
+      </div>
+      <button class="btn gold" id="nsCreate" type="button">Criar loja e gerar acesso do lojista</button>
+    </div>
   </div>
 
   <div class="ptab" id="atab-planos">
@@ -1188,21 +1312,26 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   </div>
 
   <div class="ptab" id="atab-usuarios">
+    <div class="card" style="margin-bottom:16px">
+      <h3>🔑 Minha senha — Super Admin</h3>
+      <p class="sub">Conta do dono do sistema: <b>cosmesantana.hnd@gmail.com</b>. Troque quando quiser — neste modelo a nova senha vale <b>neste navegador</b>; na produção, em todos os aparelhos (Supabase Auth).</p>
+      <div class="frow" style="margin-top:12px">
+        <div class="field"><label for="saCur">Senha atual</label><div class="pwrap"><input id="saCur" type="password" autocomplete="current-password" placeholder="Sua senha atual" /><button class="peye" type="button" data-eye="saCur" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+        <div class="field"><label for="saNew">Nova senha</label><div class="pwrap"><input id="saNew" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" /><button class="peye" type="button" data-eye="saNew" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+      </div>
+      <div class="frow">
+        <div class="field"><label for="saConf">Confirmar nova senha</label><div class="pwrap"><input id="saConf" type="password" autocomplete="new-password" placeholder="Repita a nova senha" /><button class="peye" type="button" data-eye="saConf" aria-label="Mostrar ou ocultar senha">👁</button></div></div>
+        <div class="field" style="display:flex;align-items:flex-end"><button class="btn gold" id="saPassSave" type="button" style="width:100%">Trocar minha senha</button></div>
+      </div>
+      <p class="login-err" id="saPassErr"></p>
+    </div>
     <div class="card">
-      <h3>Reset de senha de qualquer usuário</h3>
-      <p class="sub">Funcionário esqueceu a senha? Gere uma nova aqui e envie direto no WhatsApp dele com 1 toque — ou copie e mande por onde preferir.</p>
+      <h3>Usuários &amp; reset de senha</h3>
+      <p class="sub">Lojistas e funcionários. <b>Resetar</b> mata a senha antiga na hora, gera uma <b>temporária nova</b>, marca o usuário como <b>“Troca pendente”</b> e abre a caixa de envio (Copiar ou WhatsApp). A senha definitiva, <b>só o próprio usuário cria</b> no primeiro acesso — o Super Admin nunca enxerga a senha nova de ninguém.</p>
       <div class="tblwrap" style="margin-top:12px"><table class="tbl" id="saUserTable">
-        <thead><tr><th>Usuário</th><th>Loja</th><th>Função</th><th>WhatsApp</th><th>Reset</th></tr></thead>
+        <thead><tr><th>Usuário</th><th>Loja</th><th>Função</th><th>E-mail</th><th>WhatsApp</th><th>Status</th><th>Reset</th></tr></thead>
         <tbody></tbody>
       </table></div>
-      <div id="resetBox" style="display:none;margin-top:14px" class="insight">
-        <b id="resetTitle">Nova senha gerada</b>
-        <p style="margin:6px 0">Usuário: <b id="resetUser"></b> · Nova senha temporária: <span class="mono" id="resetPass" style="font-size:17px;font-weight:600"></span></p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
-          <a class="btn sm gold" id="resetWa" href="#" target="_blank" rel="noopener">Enviar no WhatsApp do funcionário</a>
-          <button class="btn sm" id="resetCopy" type="button">Copiar senha</button>
-        </div>
-      </div>
     </div>
   </div>
   <div class="ptab" id="atab-leads">
@@ -1351,15 +1480,19 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
 
 <div class="modal-bg" id="resetModal">
   <div class="modal">
-    <h3>Resetar senha</h3>
+    <h3 id="resetModalTitle">Acesso gerado</h3>
     <p class="sub" id="resetModalSub"></p>
-    <div class="field" style="margin-top:14px"><label for="newPassIn">Nova senha temporária</label><input id="newPassIn" class="mono" /></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn ghost" data-close="resetModal" type="button" style="flex:1">Cancelar</button>
-      <button class="btn" id="resetCopy2" type="button" style="flex:1">Copiar</button>
+    <div class="cred-box" style="margin-top:14px">
+      <div>📧 E-mail de acesso: <b class="mono" id="resetEmail">—</b></div>
+      <div style="margin-top:6px">🔑 Senha temporária: <span class="mono" id="newPassIn" style="font-size:17px;font-weight:700"></span></div>
+      <p>Acesse em <b>imperiumtech.vercel.app</b> — a troca por uma senha própria é <b>obrigatória no primeiro acesso</b>.</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn ghost" data-close="resetModal" type="button" style="flex:1">Fechar</button>
+      <button class="btn" id="resetCopy2" type="button" style="flex:1">Copiar acesso</button>
       <a class="btn gold" id="resetWa2" href="#" target="_blank" rel="noopener" style="flex:2">Enviar no WhatsApp</a>
     </div>
-    <p class="hint" style="margin-top:10px">Ao confirmar, a senha antiga para de funcionar e o funcionário entra com a nova, trocando no primeiro acesso.</p>
+    <p class="hint" style="margin-top:10px">A senha antiga para de funcionar na hora. A senha nova, <b>só o próprio usuário conhece</b>: nem o dono da loja, nem o Super Admin enxergam.</p>
   </div>
 </div>
 
@@ -1731,6 +1864,14 @@ let state = {
     {name:"Lanchonete da Praça", seg:"Lanchonete", plan:"Start", sales:1217, status:"Ativa"},
     {name:"Pizzaria Forno Alto", seg:"Restaurante", plan:"Império", sales:2980, status:"Trial"}
   ],
+  saUsers:[
+    {name:"Cosme Santana", email:"dono@sabordaserra.com.br", phone:"(79) 99999-0101", store:"Sabor da Serra — Restaurante", storeKey:"restaurante", role:"Dono da loja", status:"aguardando", temp:"loja2026"},
+    {name:"Antônio Ribeiro", email:"dono@mercadobompreco.com.br", phone:"(79) 98877-2020", store:"Mercado Bom Preço", storeKey:"mercado", role:"Dono da loja", status:"aguardando", temp:"loja2026"},
+    {name:"Rafa Cortes", email:"dono@barbeariaimperio.com.br", phone:"(79) 97766-3030", store:"Barbearia Império", storeKey:"barbearia", role:"Dono da loja", status:"aguardando", temp:"loja2026"},
+    {name:"Zé Motors", email:"dono@oficinadoze.com.br", phone:"(79) 96655-4040", store:"Oficina do Zé Motors", storeKey:"oficina", role:"Dono da loja", status:"aguardando", temp:"loja2026"},
+    {name:"Marina Lopes", email:"dono@lanchonetedapraca.com.br", phone:"(79) 95544-5050", store:"Lanchonete da Praça", storeKey:null, role:"Dono da loja", status:"aguardando", temp:"loja2026"},
+    {name:"Paulo Ferreira", email:"dono@fornoalto.com.br", phone:"(79) 94433-6060", store:"Pizzaria Forno Alto", storeKey:null, role:"Dono da loja", status:"aguardando", temp:"loja2026"}
+  ],
   plans:[
     {name:"Start", price:49.90, desc:"PDV + estoque + recibo com logo · 1 usuário"},
     {name:"Pro", price:99.90, desc:"Tudo do Start + mesas ou agenda + cardápio + relatórios + IA"},
@@ -1801,6 +1942,7 @@ function updateStoreChrome(){
   const db = $("#demoBanner");
   if(db){ db.style.display = state.demo ? "" : "none"; const nm = $("#demoBannerStore"); if(nm) nm.textContent = state.store.name; }
   const dlc = $("#demoLoginCard"); if(dlc) dlc.style.display = state.demo ? "" : "none";
+  const mpc = $("#myPassCard"); if(mpc) mpc.style.display = state.demo ? "none" : "";
   const pill = $("#caixaNome");
   if(pill) pill.textContent = state.demo ? rolePersona() : (state.team[0] ? state.team[0].name.split(" ")[0]+" ("+state.team[0].role+")" : "—");
   const g = $("#droleGarcom"); if(g) g.textContent = thirdRoleName();
@@ -2035,7 +2177,7 @@ function showView(name){
   $$(".vnav").forEach(b=>b.classList.toggle("on", b.dataset.view===name));
   window.scrollTo({top:0,behavior:"smooth"});
 }
-$$(".vnav").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view)));
+$$(".vnav").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.view==="admin" && !ownerAuthed){ openOwnerLogin(); return; } showView(b.dataset.view); }));
 $$(".seg-chip").forEach(c=>c.addEventListener("click",()=>{ applySegment(c.dataset.seg); toast((state.demo?"🧪 Loja-demo de ":"Loja: ")+seg().label+" — agora você vê somente os dados de "+state.store.name); }));
 
 function syncModuleNav(){
@@ -2798,26 +2940,49 @@ $("#npAdd").addEventListener("click",()=>{
 });
 
 /* equipe + reset (loja) */
+const STATUS_LBL = {aguardando:["Aguardando primeiro acesso","a"], ativo:["Ativo","g"], pendente:["Troca pendente (reset)","r"]};
+function statusTag(st){ const s = STATUS_LBL[st]||STATUS_LBL.ativo; return '<span class="tag '+s[1]+'">'+s[0]+'</span>'; }
 function renderTeam(){
-  $("#teamTable tbody").innerHTML = state.team.map((u,ix)=>'<tr><td data-l="Funcionário"><b>'+u.name+'</b></td><td data-l="Função">'+u.role+'</td><td data-l="WhatsApp">'+u.phone+'</td><td data-l="Senha"><span class="mono">'+u.pass+'</span></td><td><button class="btn sm" data-reset="'+ix+'" type="button">Resetar senha</button></td></tr>').join("");
+  $("#teamTable tbody").innerHTML = state.team.map((u,ix)=>'<tr><td data-l="Funcionário"><b>'+u.name+'</b></td><td data-l="Função">'+u.role+'</td><td data-l="E-mail">'+(u.email||"—")+'</td><td data-l="WhatsApp">'+u.phone+'</td><td data-l="Status">'+statusTag(u.status)+'</td><td><button class="btn sm" data-reset="'+ix+'" type="button">Resetar senha</button></td></tr>').join("");
   $$("#teamTable [data-reset]").forEach(b=>b.addEventListener("click",()=>openReset(state.team[+b.dataset.reset])));
 }
 $("#nuAdd").addEventListener("click",()=>{
   const name = $("#nuName").value.trim(); if(!name){ toast("Informe o nome do funcionário."); return; }
-  state.team.push({name, role:$("#nuRole").value, phone:$("#nuPhone").value||"—", pass:"••••••"});
-  $("#nuName").value=""; $("#nuPhone").value=""; $("#nuPass").value="";
-  renderTeam(); renderSaUsers(); toast(name+" entrou para a equipe.");
+  const temp = genPass();
+  const u = {name, role:$("#nuRole").value, phone:$("#nuPhone").value.trim()||"—", email:$("#nuEmail").value.trim().toLowerCase(), pass:temp, status:"aguardando"};
+  state.team.push(u);
+  $("#nuName").value=""; $("#nuPhone").value=""; $("#nuEmail").value="";
+  renderTeam(); renderSaUsers();
+  showAccess(u, temp, "Acesso do funcionário gerado");
+  toast(name+" entrou para a equipe — envie o acesso gerado (Copiar ou WhatsApp).");
 });
 function genPass(){ const c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s=""; for(let i=0;i<4;i++) s+=c[Math.floor(Math.random()*c.length)]; return "Imp"+s+"!"; }
-function openReset(user){
-  const np = genPass(); user.pass = np; state.resetCtx = {user, pass:np};
-  $("#resetModalSub").textContent = "Nova senha para "+user.name+" ("+user.role+") · WhatsApp "+user.phone;
-  $("#newPassIn").value = np;
-  const msg = "Olá, "+user.name.split(" ")[0]+"! Sua senha do IMPERIUMTECH ("+state.store.name+") foi redefinida. Nova senha temporária: "+np+" — troque no primeiro acesso.";
-  $("#resetWa2").href = "https://wa.me/55"+digits(user.phone)+"?text="+encodeURIComponent(msg);
-  openModal("resetModal"); renderTeam(); renderSaUsers();
+/* caixa de acesso: mostra e-mail + senha temporária, com Copiar e WhatsApp (link do sistema + credenciais) */
+function accessMsg(u, temp){
+  let m = "Olá, "+u.name.split(" ")[0]+"! Seu acesso ao IMPERIUMTECH"+(u.store? " ("+u.store+")":"")+" está pronto. Entre em https://imperiumtech.vercel.app";
+  if(u.email) m += " com o e-mail "+u.email;
+  m += " e a senha temporária: "+temp+". A troca da senha é obrigatória no primeiro acesso.";
+  return m;
 }
-$("#resetCopy2").addEventListener("click",()=>{ if(navigator.clipboard) navigator.clipboard.writeText($("#newPassIn").value); toast("Senha copiada — cole onde preferir enviar."); });
+function accessCopyText(u, temp){
+  return "Acesso IMPERIUMTECH"+(u.store? " — "+u.store:"")+"\nEntre em: https://imperiumtech.vercel.app\n"+(u.email? "E-mail: "+u.email+"\n":"")+"Senha temporária: "+temp+"\nA troca da senha é obrigatória no primeiro acesso.";
+}
+function showAccess(u, temp, title){
+  state.resetCtx = {user:u, pass:temp};
+  $("#resetModalTitle").textContent = title||"Acesso gerado";
+  $("#resetModalSub").textContent = u.name+" · "+(u.role||"Usuário")+" · "+(u.store||state.store.name)+" · WhatsApp "+(u.phone||"—");
+  $("#resetEmail").textContent = u.email||"— (usuário interno da loja)";
+  $("#newPassIn").textContent = temp;
+  $("#resetWa2").href = "https://wa.me/55"+digits(u.phone)+"?text="+encodeURIComponent(accessMsg(u, temp));
+  openModal("resetModal");
+}
+function openReset(user){
+  const np = genPass(); user.pass = np; user.status = "pendente";
+  if(user.email && state.saUsers.indexOf(user)>=0){ user.temp = np; lsSetUser(user.email, {reset:true, temp:np}); }
+  showAccess(user, np, "Senha redefinida — novo acesso");
+  renderTeam(); renderSaUsers();
+}
+$("#resetCopy2").addEventListener("click",()=>{ if(state.resetCtx && navigator.clipboard) navigator.clipboard.writeText(accessCopyText(state.resetCtx.user, state.resetCtx.pass)); toast("Acesso copiado — cole onde preferir enviar."); });
 
 /* relatórios */
 function renderReports(){
@@ -2967,7 +3132,7 @@ function renderAdmin(){
   $("#saSales").textContent = monthSales.toLocaleString("pt-BR");
   $("#saFeeLbl").textContent = money(state.fee);
   $("#saStores").textContent = state.saStores.length;
-  $("#saStoreTable tbody").innerHTML = state.saStores.map((s,ix)=>'<tr><td data-l="Loja"><b>'+s.name+'</b></td><td data-l="Segmento">'+s.seg+'</td><td data-l="Plano"><span class="tag gd">'+s.plan+'</span></td><td data-l="Vendas/mês">'+s.sales.toLocaleString("pt-BR")+'</td><td data-l="Status"><span class="tag '+(s.status==="Ativa"?"g":"a")+'">'+s.status+'</span></td><td>'+(SA_OPEN[s.name]?'<button class="btn sm gold" data-saopen="'+SA_OPEN[s.name]+'" type="button">Abrir loja</button> ':"")+'<button class="btn sm" data-sareset="'+ix+'" type="button">Resetar senha do dono</button></td></tr>').join("");
+  $("#saStoreTable tbody").innerHTML = state.saStores.map((s,ix)=>{ const ou = state.saUsers.find(u=>u.store===s.name&&u.storeKey); const openKey = SA_OPEN[s.name]||(ou?ou.storeKey:null); return '<tr><td data-l="Loja"><b>'+s.name+'</b></td><td data-l="Segmento">'+s.seg+'</td><td data-l="Plano"><span class="tag gd">'+s.plan+'</span></td><td data-l="Vendas/mês">'+s.sales.toLocaleString("pt-BR")+'</td><td data-l="Status"><span class="tag '+(s.status==="Ativa"?"g":"a")+'">'+s.status+'</span></td><td>'+(openKey?'<button class="btn sm gold" data-saopen="'+openKey+'" type="button">Abrir loja</button> ':"")+'<button class="btn sm" data-sareset="'+ix+'" type="button">Resetar senha do dono</button></td></tr>'; }).join("");
   $$("#saStoreTable [data-saopen]").forEach(b=>b.addEventListener("click",()=>{
     document.body.classList.remove("gated");
     document.body.classList.remove("demo");
@@ -2978,28 +3143,25 @@ function renderAdmin(){
   }));
   renderLeads();
   $$("#saStoreTable [data-sareset]").forEach(b=>b.addEventListener("click",()=>{
-    openReset({name:"Dono — "+state.saStores[+b.dataset.sareset].name, role:"Dono da loja", phone:"(79) 99999-0101", pass:""});
+    const s = state.saStores[+b.dataset.sareset];
+    const u = state.saUsers.find(x=>x.store===s.name);
+    if(u) openReset(u);
+    else openReset({name:"Dono — "+s.name, role:"Dono da loja", phone:"(79) 99999-0101", pass:"", store:s.name});
   }));
   $("#planList").innerHTML = state.plans.map(p=>'<div class="switchrow"><div class="tx"><b>'+p.name+'</b><p>'+p.desc+'</p></div><b style="font-family:Sora">'+money(p.price)+'<span class="hint">/mês</span></b></div>').join("");
   renderSaUsers();
 }
+function userStatusTag(u){
+  if(u.email){ const rec = lsGetUser(u.email); if(rec && rec.hash) return statusTag("ativo"); if(rec && rec.reset) return statusTag("pendente"); }
+  return statusTag(u.status);
+}
 function renderSaUsers(){
   const rows = [];
-  state.saStores.slice(0,4).forEach(s=>rows.push({name:"Dono · "+s.name, store:s.name, role:"Dono da loja", phone:"(79) 99999-0101"}));
-  state.team.forEach(u=>rows.push({name:u.name, store:state.store.name, role:u.role, phone:u.phone}));
-  $("#saUserTable tbody").innerHTML = rows.map((u,ix)=>'<tr><td data-l="Usuário"><b>'+u.name+'</b></td><td data-l="Loja">'+u.store+'</td><td data-l="Função">'+u.role+'</td><td data-l="WhatsApp">'+u.phone+'</td><td><button class="btn sm gold" data-sa-reset="'+ix+'" type="button">Gerar nova senha</button></td></tr>').join("");
-  $$("#saUserTable [data-sa-reset]").forEach(b=>b.addEventListener("click",()=>{
-    const u = rows[+b.dataset.saReset]; const np = genPass();
-    state.resetCtx = {user:u, pass:np};
-    $("#resetBox").style.display="block";
-    $("#resetUser").textContent = u.name+" ("+u.store+")";
-    $("#resetPass").textContent = np;
-    const msg = "Olá! Sua senha do IMPERIUMTECH foi redefinida pelo suporte. Nova senha temporária: "+np+" — troque no primeiro acesso.";
-    $("#resetWa").href = "https://wa.me/55"+digits(u.phone)+"?text="+encodeURIComponent(msg);
-    document.getElementById("resetBox").scrollIntoView({behavior:"smooth",block:"nearest"});
-  }));
+  state.saUsers.forEach(u=>rows.push({u:u, ref:u}));
+  state.team.forEach(u=>rows.push({u:{name:u.name, store:state.store.name, role:u.role, phone:u.phone, email:u.email||"", status:u.status}, ref:u}));
+  $("#saUserTable tbody").innerHTML = rows.map((r,ix)=>{ const u=r.u; return '<tr><td data-l="Usuário"><b>'+u.name+'</b></td><td data-l="Loja">'+u.store+'</td><td data-l="Função">'+u.role+'</td><td data-l="E-mail">'+(u.email||"—")+'</td><td data-l="WhatsApp">'+u.phone+'</td><td data-l="Status">'+userStatusTag(u)+'</td><td><button class="btn sm gold" data-sa-reset="'+ix+'" type="button">Resetar senha</button></td></tr>'; }).join("");
+  $$("#saUserTable [data-sa-reset]").forEach(b=>b.addEventListener("click",()=>{ openReset(rows[+b.dataset.saReset].ref); }));
 }
-$("#resetCopy").addEventListener("click",()=>{ if(state.resetCtx && navigator.clipboard) navigator.clipboard.writeText(state.resetCtx.pass); toast("Senha copiada — envie por onde preferir."); });
 $("#feeSave").addEventListener("click",()=>{
   const v = parseFloat(($("#feeIn").value||"").replace(",","."));
   if(!(v>=0)){ toast("Informe uma taxa válida."); return; }
@@ -3448,6 +3610,216 @@ function enterOwner(){
   showView("admin");
   toast("Super Admin — visão de todas as lojas, planos, taxas e leads. Só você, dono do sistema, enxerga esta área.");
 }
+
+/* ================= ACESSOS: Super Admin + lojistas (modelo) =================
+   Regra do ciclo: login = e-mail · senha temporária na criação/reset ·
+   troca obrigatória no primeiro acesso · senha nova salva com hash (SHA-256)
+   no localStorage DESTE navegador, vinculada ao usuário. Na produção, o mesmo
+   ciclo roda no servidor (Supabase Auth) com convite e recuperação por e-mail. */
+const OWNER_EMAIL = "cosmesantana.hnd@gmail.com";
+const OWNER_TEMP = "imperium2026";
+const LOJISTA_TEMP = "loja2026";
+const AUTH_LS_KEY = "imperiumtech.auth.v1";
+let ownerAuthed = false;
+let clientSession = null;
+let fcCtx = null;
+function lsLoad(){ try{ return JSON.parse(localStorage.getItem(AUTH_LS_KEY))||{}; }catch(e){ return {}; } }
+function lsSave(d){ try{ localStorage.setItem(AUTH_LS_KEY, JSON.stringify(d)); }catch(e){} }
+function lsGetUser(email){ const d = lsLoad(); return (d.users||{})[(email||"").trim().toLowerCase()]; }
+function lsSetUser(email, rec){ const d = lsLoad(); d.users = d.users||{}; const k = (email||"").trim().toLowerCase(); if(rec) d.users[k] = rec; else delete d.users[k]; lsSave(d); }
+async function sha256(str){
+  try{
+    if(window.crypto && crypto.subtle && window.TextEncoder){
+      const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("imperiumtech:"+str));
+      return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+    }
+  }catch(e){}
+  let h1=0xdeadbeef, h2=0x41c6ce57;
+  for(let i=0;i<str.length;i++){ const ch=str.charCodeAt(i); h1=Math.imul(h1^ch,2654435761); h2=Math.imul(h2^ch,1597334677); }
+  h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);
+  h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);
+  return (h2>>>0).toString(16).padStart(8,"0")+(h1>>>0).toString(16).padStart(8,"0");
+}
+/* olhinho reutilizável: qualquer botão [data-eye] alterna o campo indicado */
+document.addEventListener("click",e=>{
+  const b = e.target.closest ? e.target.closest("[data-eye]") : null; if(!b) return;
+  const inp = document.getElementById(b.dataset.eye); if(!inp) return;
+  const show = inp.type==="password";
+  inp.type = show ? "text" : "password";
+  b.textContent = show ? "🙈" : "👁";
+  b.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+});
+function loginErr(id, msg){ const e = $("#"+id); e.textContent = msg; e.style.display = "block"; }
+
+/* ---------- login do Super Admin ---------- */
+function openOwnerLogin(){
+  clientSession = null;
+  document.body.classList.add("gated"); document.body.classList.remove("demo");
+  $("#owEmail").value = OWNER_EMAIL; $("#owPass").value = "";
+  $("#owError").style.display = "none"; $("#owRestoreBox").style.display = "none";
+  showView("ownerlogin"); window.scrollTo(0,0);
+  setTimeout(()=>$("#owPass").focus(), 80);
+}
+$("#owBack").addEventListener("click", enterGate);
+$("#owEnter").addEventListener("click", async ()=>{
+  const email = $("#owEmail").value.trim().toLowerCase(), p = $("#owPass").value;
+  if(email!==OWNER_EMAIL){ loginErr("owError","Este e-mail não é o do dono do sistema. O Super Admin abre somente com "+OWNER_EMAIL+"."); return; }
+  const d = lsLoad();
+  if(d.owner && d.owner.hash){
+    if(await sha256(p)===d.owner.hash){ ownerAuthed = true; enterOwner(); }
+    else loginErr("owError","Senha incorreta. Confira (use o olhinho 👁) ou restaure o acesso neste aparelho, logo abaixo.");
+  } else if(p===OWNER_TEMP){
+    openForceChange({kind:"owner", temp:OWNER_TEMP, title:"Crie a senha do Super Admin", sub:"Primeiro acesso com a senha temporária. Crie agora a sua senha definitiva do sistema — diferente da temporária e conhecida só por você."});
+  } else {
+    loginErr("owError","Senha incorreta. No primeiro acesso, use a senha temporária que você recebeu fora da página.");
+  }
+});
+$("#owPass").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#owEnter").click(); });
+$("#owRestore").addEventListener("click",()=>{ $("#owRestoreBox").style.display = ""; });
+$("#owRestoreNo").addEventListener("click",()=>{ $("#owRestoreBox").style.display = "none"; });
+$("#owRestoreYes").addEventListener("click",()=>{
+  const d = lsLoad(); delete d.owner; lsSave(d);
+  $("#owRestoreBox").style.display = "none"; $("#owPass").value = ""; $("#owError").style.display = "none";
+  toast("Acesso restaurado neste aparelho — entre com a senha temporária e crie uma senha nova.");
+});
+$("#saLogout").addEventListener("click",()=>{
+  ownerAuthed = false; enterGate();
+  toast("Super Admin travado 🔐 Para entrar de novo, use o botão do dono do sistema, com seu e-mail e senha.");
+});
+/* trocar a própria senha dentro do Super Admin */
+$("#saPassSave").addEventListener("click", async ()=>{
+  const cur = $("#saCur").value, n = $("#saNew").value, c = $("#saConf").value;
+  const d = lsLoad();
+  const okCur = (d.owner && d.owner.hash) ? (await sha256(cur)===d.owner.hash) : (cur===OWNER_TEMP);
+  if(!okCur){ loginErr("saPassErr","A senha atual não confere."); return; }
+  if(n.length<8){ loginErr("saPassErr","A nova senha precisa de no mínimo 8 caracteres."); return; }
+  if(n===cur){ loginErr("saPassErr","A nova senha precisa ser diferente da atual."); return; }
+  if(n!==c){ loginErr("saPassErr","A confirmação não bate com a nova senha."); return; }
+  d.owner = {hash: await sha256(n)}; lsSave(d);
+  $("#saCur").value = ""; $("#saNew").value = ""; $("#saConf").value = ""; $("#saPassErr").style.display = "none";
+  toast("Senha do Super Admin trocada ✅ Vale neste navegador a partir de agora.");
+});
+
+/* ---------- login do lojista / usuário ---------- */
+function openUserLogin(){
+  document.body.classList.add("gated"); document.body.classList.remove("demo");
+  $("#usPass").value = ""; $("#usError").style.display = "none";
+  showView("userlogin"); window.scrollTo(0,0);
+  setTimeout(()=>$("#usEmail").focus(), 80);
+}
+$("#usBack").addEventListener("click", enterGate);
+$("#usEnter").addEventListener("click", async ()=>{
+  const email = $("#usEmail").value.trim().toLowerCase(), p = $("#usPass").value;
+  const u = state.saUsers.find(x=>x.email===email);
+  if(!u){ loginErr("usError","E-mail não cadastrado como lojista. Confira o e-mail de acesso — ou fale com o suporte IMPERIUMTECH."); return; }
+  const rec = lsGetUser(email);
+  if(rec && rec.reset){
+    if(p===rec.temp){ openForceChange({kind:"lojista", user:u, email:email, temp:rec.temp, title:"Senha redefinida — crie a sua nova senha", sub:"O suporte gerou uma senha temporária nova para você. Crie agora a sua senha definitiva — só você conhece."}); }
+    else loginErr("usError","Senha incorreta. Após um reset, o acesso é com a senha temporária nova enviada pelo suporte.");
+  } else if(rec && rec.hash){
+    if(await sha256(p)===rec.hash){ enterStoreAs(u); }
+    else loginErr("usError","Senha incorreta. Confira (use o olhinho 👁) — esqueceu? Peça um reset ao suporte: uma temporária nova chega pra você.");
+  } else if(p===(u.temp||LOJISTA_TEMP)){
+    openForceChange({kind:"lojista", user:u, email:email, temp:p, title:"Crie a sua senha, "+u.name.split(" ")[0], sub:"Primeiro acesso com a senha temporária. Crie agora a senha definitiva da sua loja — nem o suporte enxerga a sua senha."});
+  } else {
+    loginErr("usError","Senha incorreta. No primeiro acesso, use a senha temporária enviada pelo suporte.");
+  }
+});
+$("#usPass").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#usEnter").click(); });
+function enterStoreAs(u){
+  if(!u.storeKey){
+    toast("Login reconhecido ✅ No modelo, o painel completo roda nas lojas com demonstração; a loja "+u.store+" ganha o painel próprio dela na produção.");
+    openUserLogin(); return;
+  }
+  document.body.classList.remove("gated"); document.body.classList.remove("demo");
+  $("#leadFab").style.display = "none"; $("#exitDemoBtn").style.display = "none";
+  clientSession = {email:u.email};
+  applyStore(u.storeKey, false);
+  if(u.store && state.store.name!==u.store){
+    state.store.name = u.store; state.store.initials = initialsOf(u.store);
+    $("#stName").value = u.store; updateStoreChrome(); renderAll();
+  }
+  setRole("admin"); showView("painel");
+  toast("Bem-vindo(a), "+u.name.split(" ")[0]+"! 🏪 Painel da sua loja — "+state.store.name+". Só os dados dela aparecem aqui.");
+}
+
+/* ---------- troca obrigatória de senha (primeiro acesso / pós-reset) ---------- */
+function openForceChange(ctx){
+  fcCtx = ctx;
+  document.body.classList.add("gated"); document.body.classList.remove("demo");
+  $("#fcTitle").textContent = ctx.title; $("#fcSub").textContent = ctx.sub;
+  $("#fcNew").value = ""; $("#fcConfirm").value = ""; $("#fcErr").style.display = "none";
+  showView("forcechange"); window.scrollTo(0,0);
+  setTimeout(()=>$("#fcNew").focus(), 80);
+}
+$("#fcCancel").addEventListener("click",()=>{ fcCtx = null; enterGate(); });
+$("#fcSave").addEventListener("click", async ()=>{
+  if(!fcCtx) return;
+  const n = $("#fcNew").value, c = $("#fcConfirm").value;
+  if(n.length<8){ loginErr("fcErr","A nova senha precisa de no mínimo 8 caracteres."); return; }
+  if(n===fcCtx.temp){ loginErr("fcErr","A nova senha não pode ser igual à senha temporária."); return; }
+  if(n!==c){ loginErr("fcErr","A confirmação não bate com a nova senha. Confira os dois campos (use o olhinho 👁)."); return; }
+  const h = await sha256(n);
+  if(fcCtx.kind==="owner"){
+    const d = lsLoad(); d.owner = {hash:h}; lsSave(d);
+    ownerAuthed = true; fcCtx = null;
+    toast("Senha do Super Admin criada ✅ A temporária não funciona mais neste aparelho.");
+    enterOwner();
+  } else {
+    const u = fcCtx.user, email = fcCtx.email;
+    lsSetUser(email, {hash:h});
+    if(u){ u.status = "ativo"; u.temp = null; }
+    fcCtx = null;
+    toast("Senha criada ✅ A partir de agora, você entra direto com ela.");
+    enterStoreAs(u);
+  }
+});
+["fcNew","fcConfirm"].forEach(id=>{ $("#"+id).addEventListener("keydown",e=>{ if(e.key==="Enter") $("#fcSave").click(); }); });
+
+/* ---------- criação de loja / lojista no Super Admin ---------- */
+$("#nsCreate").addEventListener("click",()=>{
+  const owner = $("#nsOwner").value.trim(), email = $("#nsEmail").value.trim().toLowerCase(), store = $("#nsStore").value.trim();
+  if(!owner || !email || !store){ toast("Preencha nome do dono, e-mail e nome da loja."); return; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ toast("Informe um e-mail válido — ele será o login do lojista."); return; }
+  if(state.saUsers.some(u=>u.email===email)){ toast("Já existe um usuário com este e-mail. Use outro e-mail de login."); return; }
+  const segKey = $("#nsSeg").value;
+  const segLbl = {restaurante:"Restaurante", mercado:"Mercado", barbearia:"Barbearia", oficina:"Oficina"}[segKey];
+  if(!state.saStores.some(s=>s.name===store)) state.saStores.push({name:store, seg:segLbl, plan:$("#nsPlan").value, sales:0, status:"Trial"});
+  const temp = genPass();
+  const u = {name:owner, email:email, phone:$("#nsPhone").value.trim()||"—", store:store, storeKey:segKey, role:"Dono da loja", status:"aguardando", temp:temp};
+  state.saUsers.push(u);
+  lsSetUser(email, null);
+  $("#nsOwner").value = ""; $("#nsEmail").value = ""; $("#nsPhone").value = ""; $("#nsStore").value = "";
+  renderAdmin();
+  showAccess(u, temp, "Loja criada — acesso do lojista");
+  toast("Loja "+store+" criada ✅ Envie o acesso ao lojista: a troca de senha é obrigatória no primeiro acesso dele.");
+});
+
+/* ---------- “Minha senha” no Painel da loja (troca voluntária do lojista) ---------- */
+function currentStoreUser(){
+  if(clientSession) return state.saUsers.find(u=>u.email===clientSession.email) || null;
+  return state.saUsers.find(u=>u.store===state.store.name) || null;
+}
+$("#mpSave").addEventListener("click", async ()=>{
+  const u = currentStoreUser();
+  if(!u || !u.email){ loginErr("mpErr","Nenhum usuário lojista vinculado a esta loja neste navegador."); return; }
+  const cur = $("#mpCur").value, n = $("#mpNew").value, c = $("#mpConf").value;
+  const rec = lsGetUser(u.email);
+  const okCur = (rec && rec.hash) ? (await sha256(cur)===rec.hash) : (cur===((rec && rec.temp) || u.temp || LOJISTA_TEMP));
+  if(!okCur){ loginErr("mpErr","A senha atual não confere."); return; }
+  if(n.length<8){ loginErr("mpErr","A nova senha precisa de no mínimo 8 caracteres."); return; }
+  if(n===cur){ loginErr("mpErr","A nova senha precisa ser diferente da atual."); return; }
+  if(n!==c){ loginErr("mpErr","A confirmação não bate com a nova senha."); return; }
+  lsSetUser(u.email, {hash: await sha256(n)});
+  u.status = "ativo"; u.temp = null;
+  $("#mpCur").value = ""; $("#mpNew").value = ""; $("#mpConf").value = ""; $("#mpErr").style.display = "none";
+  renderSaUsers();
+  toast("Sua senha foi trocada ✅ Vale neste navegador a partir de agora.");
+});
+$("#mpLogout").addEventListener("click",()=>{
+  clientSession = null; enterGate();
+  toast("Você saiu da sua loja. Para entrar de novo: “Já sou cliente — entrar na minha loja”, com seu e-mail e senha.");
+});
 /* ---------- login da demonstração: escolher o segmento NÃO entra direto ---------- */
 let pendingDemoSeg = "restaurante";
 const GATE_META = {
@@ -3472,11 +3844,13 @@ $("#lgEnter").addEventListener("click",()=>{
   const u = $("#lgUser").value.trim().toLowerCase(), p = $("#lgPass").value.trim();
   if(u!=="demo" || p!=="demo"){ $("#lgError").style.display = "block"; return; }
   $("#lgError").style.display = "none";
+  clientSession = null;
   enterDemo(pendingDemoSeg);
 });
 ["lgUser","lgPass"].forEach(id=>{ $("#"+id).addEventListener("keydown",e=>{ if(e.key==="Enter") $("#lgEnter").click(); }); });
 $("#lgBack").addEventListener("click",()=>{ enterGate(); document.querySelector("#demo").scrollIntoView({behavior:"smooth"}); });
-$("#gateOwner").addEventListener("click",()=>askPin("entrar no Super Admin — área exclusiva do dono do sistema, fora da demonstração pública", enterOwner));
+$("#gateOwner").addEventListener("click", openOwnerLogin);
+$("#gateClient").addEventListener("click", openUserLogin);
 /* ---------- sair da demo APAGA os dados fictícios da sessão ---------- */
 function resetDemoData(){
   ["restaurante","mercado","barbearia","oficina"].forEach(k=>{ delete state.bundles["demo-"+k]; });
