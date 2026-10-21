@@ -189,6 +189,12 @@ a{color:var(--gold2)}
 .qrmini{width:64px;height:64px;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:2px;padding:6px;border:2px solid var(--ink);border-radius:8px;background:#fff}
 .qrbig{width:196px;height:196px;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);gap:3px;padding:12px;border:3px solid var(--ink);border-radius:14px;background:#fff}
 .qrbig i{background:#111;border-radius:2px;display:block}
+.pixkey{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface2);border:1.5px dashed var(--line2);border-radius:10px;padding:10px 12px;word-break:break-all}
+.billbox{background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55}
+.totrow{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.totrow.grand{border-bottom:0;font-weight:800;font-size:16px}
+.segbtns{display:flex;gap:8px;flex-wrap:wrap}
+input[type=number].numin{max-width:150px}
 .pub-days{display:flex;gap:7px;flex-wrap:wrap}
 .pub-success{border:1.5px solid var(--green);background:var(--surface2);border-radius:12px;padding:12px 14px;margin:14px 0;font-weight:600}
 .qrmini i{background:#111;border-radius:1px;display:block}
@@ -965,6 +971,8 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
     <button class="tab" data-ptab="equipe" type="button">Equipe &amp; senhas</button>
     <button class="tab" data-ptab="relatorios" type="button">Relatórios</button>
     <button class="tab" data-ptab="recibo" type="button">Recibo</button>
+    <button class="tab" data-ptab="assinatura" type="button">💳 Minha assinatura e fatura</button>
+    <button class="tab" data-ptab="gateways" type="button">💳 Gateways da minha loja</button>
     <button class="tab" data-ptab="encomendas" data-modtab="encomendas" type="button">📦 Encomendas</button>
     <button class="tab" data-ptab="combos" type="button">🎁 Combos</button>
     <button class="tab" data-ptab="atalhos" type="button">⚡ Atalhos</button>
@@ -1168,6 +1176,14 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
     </div>
   </div>
 
+  <div class="ptab" id="ptab-assinatura">
+    <div id="myBillBody"></div>
+  </div>
+
+  <div class="ptab" id="ptab-gateways">
+    <div id="myGwBody"></div>
+  </div>
+
   <div class="ptab" id="ptab-encomendas">
     <div class="card" style="margin-bottom:16px">
       <h3>Nova encomenda</h3>
@@ -1261,6 +1277,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   <div class="tabs" id="adminTabs">
     <button class="tab on" data-atab="lojas" type="button">Lojas</button>
     <button class="tab" data-atab="planos" type="button">Planos &amp; taxa</button>
+    <button class="tab" data-atab="cobranca" type="button">💰 Cobrança da plataforma</button>
     <button class="tab" data-atab="usuarios" type="button">Usuários &amp; reset de senha</button>
     <button class="tab" data-atab="leads" type="button">Leads da demonstração</button>
   </div>
@@ -1302,13 +1319,17 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
         <p class="sub">Cobrada do lojista a cada venda concluída, em qualquer segmento. Ajuste vale para todas as lojas na hora.</p>
         <div class="field" style="margin-top:12px"><label for="feeIn">Taxa atual (R$)</label><input id="feeIn" inputmode="decimal" value="1,50" /></div>
         <button class="btn gold" id="feeSave" type="button">Salvar nova taxa</button>
-        <p class="hint" style="margin-top:10px">Exemplo: 1.000 vendas no mês × R$ 1,50 = <b>R$ 1.500,00</b> de receita recorrente da plataforma, fora os planos.</p>
+        <p class="hint" style="margin-top:10px">Exemplo: 1.000 vendas no mês × R$ 1,50 = <b>R$ 1.500,00</b> de receita recorrente da plataforma, fora os planos. Esta é a <b>mesma taxa</b> da aba <b>💰 Cobrança da plataforma</b> — mudou em um lugar, vale nos dois (faturas, split e prévia do lojista).</p>
       </div>
       <div class="card">
         <h3>Planos</h3>
         <div id="planList" style="margin-top:10px"></div>
       </div>
     </div>
+  </div>
+
+  <div class="ptab" id="atab-cobranca">
+    <div id="billingBody"></div>
   </div>
 
   <div class="ptab" id="atab-usuarios">
@@ -1584,6 +1605,12 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <button class="btn gold" id="qrPagePrint" type="button" style="flex:1">🖨️ Imprimir QR Code</button>
       <button class="btn ghost" data-close="qrPageModal" type="button" style="flex:1">Fechar</button>
     </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="billModal">
+  <div class="modal">
+    <div id="billModalBody"></div>
   </div>
 </div>
 
@@ -2863,6 +2890,8 @@ function renderDeliveries(){
 $$("#painelTabs .tab").forEach(t=>t.addEventListener("click",()=>{
   $$("#painelTabs .tab").forEach(x=>x.classList.toggle("on",x===t));
   $$("#view-painel .ptab").forEach(p=>p.classList.toggle("on", p.id==="ptab-"+t.dataset.ptab));
+  if(t.dataset.ptab==="assinatura") renderMyBilling();
+  if(t.dataset.ptab==="gateways") renderMyGateways();
 }));
 function renderKpis(){
   const total = state.sales.reduce((s,x)=>s+x.total,0);
@@ -3132,7 +3161,7 @@ function renderAdmin(){
   $("#saSales").textContent = monthSales.toLocaleString("pt-BR");
   $("#saFeeLbl").textContent = money(state.fee);
   $("#saStores").textContent = state.saStores.length;
-  $("#saStoreTable tbody").innerHTML = state.saStores.map((s,ix)=>{ const ou = state.saUsers.find(u=>u.store===s.name&&u.storeKey); const openKey = SA_OPEN[s.name]||(ou?ou.storeKey:null); return '<tr><td data-l="Loja"><b>'+s.name+'</b></td><td data-l="Segmento">'+s.seg+'</td><td data-l="Plano"><span class="tag gd">'+s.plan+'</span></td><td data-l="Vendas/mês">'+s.sales.toLocaleString("pt-BR")+'</td><td data-l="Status"><span class="tag '+(s.status==="Ativa"?"g":"a")+'">'+s.status+'</span></td><td>'+(openKey?'<button class="btn sm gold" data-saopen="'+openKey+'" type="button">Abrir loja</button> ':"")+'<button class="btn sm" data-sareset="'+ix+'" type="button">Resetar senha do dono</button></td></tr>'; }).join("");
+  $("#saStoreTable tbody").innerHTML = state.saStores.map((s,ix)=>{ const ou = state.saUsers.find(u=>u.store===s.name&&u.storeKey); const openKey = SA_OPEN[s.name]||(ou?ou.storeKey:null); const paused = storePaused(s.name); return '<tr><td data-l="Loja"><b>'+s.name+'</b></td><td data-l="Segmento">'+s.seg+'</td><td data-l="Plano"><span class="tag gd">'+s.plan+'</span></td><td data-l="Vendas/mês">'+s.sales.toLocaleString("pt-BR")+'</td><td data-l="Status">'+(paused?'<span class="tag r">Pausada · fatura vencida</span>':'<span class="tag '+(s.status==="Ativa"?"g":"a")+'">'+s.status+'</span>')+'</td><td>'+(openKey?'<button class="btn sm gold" data-saopen="'+openKey+'" type="button">Abrir loja</button> ':"")+'<button class="btn sm" data-sareset="'+ix+'" type="button">Resetar senha do dono</button></td></tr>'; }).join("");
   $$("#saStoreTable [data-saopen]").forEach(b=>b.addEventListener("click",()=>{
     document.body.classList.remove("gated");
     document.body.classList.remove("demo");
@@ -3150,6 +3179,7 @@ function renderAdmin(){
   }));
   $("#planList").innerHTML = state.plans.map(p=>'<div class="switchrow"><div class="tx"><b>'+p.name+'</b><p>'+p.desc+'</p></div><b style="font-family:Sora">'+money(p.price)+'<span class="hint">/mês</span></b></div>').join("");
   renderSaUsers();
+  renderBilling();
 }
 function userStatusTag(u){
   if(u.email){ const rec = lsGetUser(u.email); if(rec && rec.hash) return statusTag("ativo"); if(rec && rec.reset) return statusTag("pendente"); }
@@ -3168,6 +3198,356 @@ $("#feeSave").addEventListener("click",()=>{
   state.fee = v; renderAdmin(); renderCart(); renderReports();
   toast("Nova taxa de serviço: "+money(v)+" por venda, valendo para todas as lojas.");
 });
+
+/* ================= COBRANÇA DA PLATAFORMA (híbrido: fatura mensal padrão + split opcional por loja) ================= */
+const BILLING_NOTE = "Cobrança simulada neste modelo (demonstração) — na produção, a fatura é gerada pelo gateway ativo e baixada automaticamente (webhook).";
+function gwCfgSeed(){ return {misticpay:{mode:"api"}, mercadopago:{mode:"checkout"}, pagseguro:{mode:"api"}}; }
+function mkInv(id, store, planPrice, sales, status, due, provider, mode){
+  const fees = +(sales*1.50).toFixed(2);
+  return {id:id, store:store, ref:"Setembro/2026", planPrice:planPrice, sales:sales, fees:fees, total:+(planPrice+fees).toFixed(2), due:due, status:status, provider:provider||"misticpay", mode:mode||"api"};
+}
+const BILL = {
+  enabled:true, closeDay:5, graceDays:3,
+  gateway:{ provider:"misticpay",
+    modes:{misticpay:"api", mercadopago:"checkout", pagseguro:"api"},
+    costs:{mistic:0.50, mp:0.99, ps:0.99},
+    platformPixKey:"cobranca@imperiumtech.com.br",
+    creds:{misticPk:"", misticSk:"", mpToken:"", psEmail:"", psToken:""} },
+  perStore:{
+    "Lanchonete da Praça":{mode:"split", splitFee:2.00, gw:{provider:"misticpay", cfg:gwCfgSeed()}},
+    "Pizzaria Forno Alto":{mode:"fatura", splitFee:2.00, gw:{provider:"mercadopago", cfg:gwCfgSeed()}}
+  },
+  invoices:[
+    mkInv("fat-1","Sabor da Serra — Restaurante",99.90,1843,"paga","2026-10-05"),
+    mkInv("fat-2","Mercado Bom Preço",99.90,5210,"aberta","2026-10-20"),
+    mkInv("fat-3","Barbearia Império",99.90,864,"vencida","2026-10-05"),
+    mkInv("fat-4","Oficina do Zé Motors",49.90,392,"aberta","2026-10-20"),
+    mkInv("fat-5","Lanchonete da Praça",49.90,1217,"paga","2026-10-05"),
+    mkInv("fat-6","Pizzaria Forno Alto",249.90,2980,"aberta","2026-10-20","mercadopago","checkout")
+  ]
+};
+function billRec(storeName){
+  if(!BILL.perStore[storeName]) BILL.perStore[storeName] = {mode:"fatura", splitFee:2.00, gw:{provider:"none", cfg:gwCfgSeed()}};
+  return BILL.perStore[storeName];
+}
+function provName(p){ return {misticpay:"MisticPay", mercadopago:"Mercado Pago", pagseguro:"PagSeguro", manual:"Manual (sem gateway)"}[p]||"MisticPay"; }
+function gatewayCost(prov,total){ const c = BILL.gateway.costs; if(prov==="misticpay") return Math.min(c.mistic,total); if(prov==="mercadopago") return +(total*c.mp/100).toFixed(2); if(prov==="pagseguro") return +(total*c.ps/100).toFixed(2); return 0; }
+function invProvider(inv){ return inv.provider || BILL.gateway.provider; }
+function invMode(inv){ return inv.mode || BILL.gateway.modes[invProvider(inv)] || "api"; }
+function storeGwOn(storeName){ const r = billRec(storeName); return (r.gw && r.gw.provider && r.gw.provider!=="none") ? r.gw.provider : null; }
+function storePaused(storeName){
+  if(!BILL.enabled) return false;
+  const inv = BILL.invoices.find(i=>i.store===storeName && i.status==="vencida");
+  if(!inv) return false;
+  const due = new Date(inv.due+"T23:59:59"); due.setDate(due.getDate()+BILL.graceDays);
+  return new Date() > due;
+}
+function nextDueStr(){
+  const cd = Math.min(Math.max(BILL.closeDay||5,1),28); const d = new Date();
+  let due = new Date(d.getFullYear(), d.getMonth(), cd);
+  if(d.getDate()>cd) due = new Date(d.getFullYear(), d.getMonth()+1, cd);
+  return due.toLocaleDateString("pt-BR");
+}
+function invStatusTag(inv){
+  if(inv.status==="paga") return '<span class="tag g">Paga ✔</span>';
+  if(inv.status==="vencida") return '<span class="tag r">Vencida'+(storePaused(inv.store)?" · loja pausada":"")+'</span>';
+  return '<span class="tag a">Aberta</span>';
+}
+function copyTxt(t){ if(navigator.clipboard) navigator.clipboard.writeText(t); toast("Copiado: "+t); }
+function fmtDateBR(iso){ return String(iso||"").split("-").reverse().join("/"); }
+
+/* ---------- gateway de recebimento da plataforma (Super Admin) ---------- */
+function gwCredFieldsHTML(prov){
+  const c = BILL.gateway.creds;
+  if(prov==="misticpay") return '<div class="frow"><div class="field"><label for="gwCred1">Chave pública (pk_…)</label><input id="gwCred1" value="'+c.misticPk+'" placeholder="pk_…" /></div><div class="field"><label for="gwCred2">Chave secreta (sk_…)</label><input id="gwCred2" type="password" value="'+c.misticSk+'" placeholder="sk_…" /></div></div>';
+  if(prov==="mercadopago") return '<div class="field"><label for="gwCred1">Access Token</label><input id="gwCred1" type="password" value="'+c.mpToken+'" placeholder="APP_USR-…" /></div>';
+  return '<div class="frow"><div class="field"><label for="gwCred1">E-mail da conta PagSeguro</label><input id="gwCred1" type="email" value="'+c.psEmail+'" placeholder="conta@empresa.com.br" /></div><div class="field"><label for="gwCred2">Token de segurança</label><input id="gwCred2" type="password" value="'+c.psToken+'" placeholder="Token PagSeguro" /></div></div>';
+}
+function checkoutDomain(p){ return {misticpay:"checkout.misticpay.com.br", mercadopago:"www.mercadopago.com.br/checkout", pagseguro:"pagseguro.uol.com.br/checkout"}[p]||""; }
+function gwBlockHTML(){
+  const g = BILL.gateway, prov = g.provider, mode = g.modes[prov]||"api";
+  const ex = 499.90;
+  const btns = [["misticpay","💠 MisticPay (padrão)"],["mercadopago","🔵 Mercado Pago"],["pagseguro","🟢 PagSeguro"],["manual","✋ Desligado / Manual"]].map(function(pr){ return '<button class="btn sm'+(prov===pr[0]?" gold":"")+'" type="button" data-gwprov="'+pr[0]+'">'+pr[1]+(prov===pr[0]?" ✔ ativo":"")+'</button>'; }).join("");
+  let inner = "";
+  if(prov==="manual"){
+    inner = '<div class="billbox">✋ <b>Modo manual:</b> sem gateway. O sistema só <b>gera a fatura e registra</b>; a cobrança é feita por fora — o lojista paga no <b>Pix direto pra chave da plataforma</b> — e você marca a fatura como paga. Sem taxa de gateway: o líquido é o valor cheio.</div>'+
+    '<div class="field" style="max-width:440px;margin-top:12px"><label for="gwPixKey">Chave Pix da plataforma (recebe as faturas no modo manual)</label><input id="gwPixKey" value="'+g.platformPixKey+'" placeholder="Ex.: cobranca@imperiumtech.com.br" /></div>';
+  } else {
+    inner = '<div class="field"><label>Modo de conexão — '+provName(prov)+'</label><div class="segbtns">'+
+      '<button class="chip'+(mode==="api"?" on":"")+'" type="button" data-gwmode="api">🔌 API — integração própria</button>'+
+      '<button class="chip'+(mode==="checkout"?" on":"")+'" type="button" data-gwmode="checkout">🌐 Gateway / Checkout hospedado</button></div>'+
+      '<p class="hint" style="margin-top:6px">'+(mode==="api" ? "A fatura gera QR Pix + copia e cola pela API do provedor, e o status baixa sozinho pelo webhook." : "O provedor hospeda a página de pagamento: a fatura gera um LINK de checkout, o lojista paga lá e o sistema só acompanha o status.")+'</p></div>'+
+      (mode==="api"
+        ? '<div class="billbox"><b>Credenciais da API — '+provName(prov)+' (demonstração)</b><div style="margin-top:10px">'+gwCredFieldsHTML(prov)+'</div>'+
+          '<div class="field"><label>URL de webhook (o provedor avisa aqui quando a fatura é paga)</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input readonly value="https://api.imperiumtech.com.br/webhooks/'+prov+'" style="flex:1;min-width:200px" /><button class="btn sm" type="button" data-copy="https://api.imperiumtech.com.br/webhooks/'+prov+'">Copiar</button></div></div>'+
+          '<p class="hint">⚠️ Campos de demonstração: <b>na produção, as credenciais ficam só no backend, nunca no site</b> — e a chave secreta aparece uma única vez na criação, no painel do provedor.</p></div>'
+        : '<div class="billbox">🌐 Neste modo <b>não há credencial de API pra guardar</b>: cada fatura gera um link de checkout hospedado pelo '+provName(prov)+' (<span class="hint">'+checkoutDomain(prov)+'/fatura-…</span>) e o botão de cobrar abre o checkout do provedor.</div>');
+  }
+  return '<div class="card" style="margin-bottom:16px"><h3>🔌 Gateway de recebimento da plataforma</h3>'+
+    '<p class="sub">Quem processa as faturas da plataforma. <b>Um provedor ativo por vez</b> — nunca cobra em dobro. Trocar vale só pras cobranças novas.</p>'+
+    '<div class="segbtns" style="margin:12px 0">'+btns+'</div>'+ inner +
+    '<h4 style="margin:18px 0 8px">📊 Comparativo de custo por cobrança <span class="hint">(editável — varia por conta)</span></h4>'+
+    '<div class="frow"><div class="field"><label for="gwCostMistic">MisticPay — fixo por cobrança Pix (R$)</label><input id="gwCostMistic" class="numin" type="number" step="0.01" min="0" value="'+g.costs.mistic.toFixed(2)+'" /></div>'+
+    '<div class="field"><label for="gwCostMp">Mercado Pago — Pix (% por cobrança)</label><input id="gwCostMp" class="numin" type="number" step="0.01" min="0" value="'+g.costs.mp.toFixed(2)+'" /></div></div>'+
+    '<div class="frow"><div class="field"><label for="gwCostPs">PagSeguro — Pix (% por cobrança)</label><input id="gwCostPs" class="numin" type="number" step="0.01" min="0" value="'+g.costs.ps.toFixed(2)+'" /></div>'+
+    '<div class="field"><label>Manual — sem gateway</label><p class="hint" style="padding-top:10px">R$ 0,00 — o líquido é o valor cheio da fatura.</p></div></div>'+
+    '<div class="billbox">🧮 <b>Exemplo com uma fatura de '+money(ex)+':</b> MisticPay → líquido <b>'+money(+(ex-gatewayCost("misticpay",ex)).toFixed(2))+'</b> · Mercado Pago → líquido <b>'+money(+(ex-gatewayCost("mercadopago",ex)).toFixed(2))+'</b> · PagSeguro → líquido <b>'+money(+(ex-gatewayCost("pagseguro",ex)).toFixed(2))+'</b> · Manual → líquido <b>'+money(ex)+'</b>. O líquido de cada fatura usa o custo do <b>provedor em que ela foi emitida</b>.</div>'+
+    '<button class="btn gold" type="button" id="gwSave" style="margin-top:12px">Salvar gateway e custos</button></div>';
+}
+function openGwSwitch(p){
+  if(p===BILL.gateway.provider) return;
+  $("#billModalBody").innerHTML = '<h3>Trocar o gateway de recebimento?</h3>'+
+    '<p class="sub">De <b>'+provName(BILL.gateway.provider)+'</b> para <b>'+provName(p)+'</b>.</p>'+
+    '<div class="billbox" style="margin-top:10px">⚠️ <b>Faturas já abertas seguem no provedor antigo</b> até serem pagas — só as <b>novas cobranças</b> usam o '+provName(p)+'. Um provedor ativo por vez: <b>nunca há cobrança em dobro</b>.</div>'+
+    (p==="manual" ? '<p style="margin-top:10px">No modo manual, o sistema só gera e registra a fatura: a cobrança é feita por fora (Pix direto pra chave da plataforma) e a baixa é manual.</p>' : "")+
+    '<div style="display:flex;gap:8px;margin-top:14px"><button class="btn gold" type="button" data-gwconfirm="'+p+'" style="flex:1">Confirmar troca</button><button class="btn ghost" type="button" data-billclose style="flex:1">Cancelar</button></div>';
+  openModal("billModal");
+  $$("#billModalBody [data-gwconfirm]").forEach(b=>b.addEventListener("click",()=>{ BILL.gateway.provider = b.dataset.gwconfirm; closeModal("billModal"); renderBilling(); toast("Gateway ativo agora: "+provName(BILL.gateway.provider)+" 🔌 Novas cobranças usam ele; as abertas seguem no provedor antigo."); }));
+  $$("#billModalBody [data-billclose]").forEach(b=>b.addEventListener("click",()=>closeModal("billModal")));
+}
+function saveGatewayCfg(){
+  const g = BILL.gateway;
+  const num = (id,fb)=>{ const el = document.getElementById(id); if(!el) return fb; const v = parseFloat(String(el.value).replace(",",".")); return isNaN(v) ? fb : Math.max(v,0); };
+  g.costs.mistic = num("gwCostMistic", g.costs.mistic);
+  g.costs.mp = num("gwCostMp", g.costs.mp);
+  g.costs.ps = num("gwCostPs", g.costs.ps);
+  const pk = document.getElementById("gwPixKey"); if(pk) g.platformPixKey = pk.value.trim();
+  const c1 = document.getElementById("gwCred1"), c2 = document.getElementById("gwCred2");
+  if(c1){
+    if(g.provider==="misticpay"){ g.creds.misticPk = c1.value.trim(); if(c2) g.creds.misticSk = c2.value.trim(); }
+    else if(g.provider==="mercadopago"){ g.creds.mpToken = c1.value.trim(); }
+    else if(g.provider==="pagseguro"){ g.creds.psEmail = c1.value.trim(); if(c2) g.creds.psToken = c2.value.trim(); }
+  }
+  renderBilling();
+  toast("Gateway e custos salvos 🔌");
+}
+
+/* ---------- split automático (card compartilhado: Super Admin e lojista) ---------- */
+function splitCardHTML(storeName, admin){
+  const rec = billRec(storeName);
+  const fee = rec.splitFee||2;
+  const cost = BILL.gateway.costs.mistic;
+  const liq = +(fee-cost).toFixed(2);
+  const key = SA_OPEN[storeName];
+  const rows = key ? (SALES_BY_STORE[key]||[]).slice(0,5) : [];
+  return '<div class="card" style="margin-top:16px"><h3>⚡ Split automático — '+storeName+'</h3>'+
+  (admin
+    ? '<div class="field" style="max-width:340px;margin-top:10px"><label>Taxa por venda no modo split (R$)</label><input data-splitfee="'+storeName+'" inputmode="decimal" value="'+fee.toFixed(2).replace(".",",")+'" /><p class="hint">Pré-preenchida em R$ 2,00 pra manter '+money(state.fee)+' líquidos por venda. A conta abaixo atualiza ao salvar o campo.</p></div>'
+    : '<p style="margin-top:8px">Taxa por venda no modo split da sua loja: <b>'+money(fee)+'</b> (definida pela plataforma).</p>')+
+  '<div class="billbox" style="margin-top:10px">🧮 <b>Conta ao vivo:</b> o gateway consome <b>'+money(cost)+'/venda</b> → <b>líquido da plataforma '+money(liq)+'/venda</b>.'+(liq<=0 ? ' ⚠️ Com essa taxa a plataforma não fica com nada — suba a taxa do split.' : "")+'</div>'+
+  '<p class="hint" style="margin-top:8px">⚠️ <b>Venda mínima pro split:</b> o valor da venda precisa ser maior que a taxa ('+money(fee)+') — vendas abaixo disso não comportam a divisão e caem na fatura mensal.</p>'+
+  (admin ? '<p class="hint">🔀 O split roda <b>através do gateway do próprio lojista</b>: MisticPay → <i>splitUser/splitTax</i> · Mercado Pago → <i>marketplace_fee</i> · PagSeguro → divisão na API de Pedidos. Gateway desta loja: <b>'+(storeGwOn(storeName) ? provName(storeGwOn(storeName))+" ligado ✔" : "nenhum ligado ⚠️ — sem gateway, esta loja deveria ficar em Fatura mensal")+'</b> (o lojista liga no Painel da Loja dele, aba 💳 Gateways da minha loja).</p>' : "")+
+  '<h4 style="margin:14px 0 6px">Extrato do split — vendas recentes</h4>'+
+  (rows.length ? '<div class="tblwrap"><table class="tbl"><thead><tr><th>Hora</th><th>Valor</th><th>% de split</th><th>Parte da plataforma</th><th>Fica pra loja</th></tr></thead><tbody>'+rows.map(sv=>{ const pct = sv.total>0 ? fee/sv.total*100 : 0; const part = Math.min(fee, sv.total); return '<tr><td data-l="Hora">'+sv.hour+'</td><td data-l="Valor">'+money(sv.total)+'</td><td data-l="% de split">'+pct.toFixed(2).replace(".",",")+'%</td><td data-l="Plataforma"><b>'+money(part)+'</b></td><td data-l="Loja">'+money(+(sv.total-part).toFixed(2))+'</td></tr>'; }).join("")+'</tbody></table></div>' : '<p class="hint">Sem vendas recentes registradas nesta loja.</p>')+
+  '</div>';
+}
+function splitGwNoticeHTML(storeName){
+  const rec = billRec(storeName);
+  if(rec.mode!=="split") return "";
+  const p = storeGwOn(storeName);
+  if(!p) return '<div class="card" style="margin-top:16px;border:1.5px dashed var(--amber)"><h3>⚠️ Split sem gateway ligado</h3><p style="margin-top:6px;line-height:1.6">Sua loja está no modo <b>split</b> da plataforma, mas o split é feito <b>através do gateway da sua loja</b> — sem gateway, não há como dividir o pagamento na hora. <b>Sugestão automática:</b> voltar pro modo <b>🧾 Fatura mensal</b> (a plataforma cobra uma vez por mês, sem desconto por venda) — quem troca o modo é o Super Admin. Ou ligue um gateway na aba <b>💳 Gateways da minha loja</b> e o split passa a funcionar por ele.</p></div>';
+  const mech = {misticpay:"splitUser + splitTax na criação da transação", mercadopago:"marketplace_fee na preferência de pagamento", pagseguro:"divisão do pagamento na API de Pedidos"}[p];
+  return '<div class="billbox" style="margin-top:16px"><b>⚡ O split usa o SEU gateway</b><br/>Sua loja está em split: a taxa da plataforma é dividida na hora, <b>através do seu gateway '+provName(p)+'</b> ('+mech+'). Nada muda pro seu cliente.</div>';
+}
+
+/* ---------- aba 💰 Cobrança da plataforma (Super Admin) ---------- */
+function renderBilling(){
+  const box = $("#billingBody"); if(!box) return;
+  const b = BILL;
+  const paidTotal = b.invoices.filter(i=>i.status==="paga").reduce((s,i)=>s+i.total,0);
+  const openTotal = b.invoices.filter(i=>i.status!=="paga").reduce((s,i)=>s+i.total,0);
+  const splitStores = state.saStores.filter(s=>billRec(s.name).mode==="split");
+  let h = '<p class="sub" style="margin-bottom:10px">Modelo <b>híbrido</b>: a <b>fatura mensal agregada é o padrão</b> — mensalidade do plano + taxas das vendas do mês numa cobrança Pix só. O <b>split automático por venda</b> é opcional, por loja. E a plataforma <b>não fica presa a um gateway</b>: o provedor de recebimento é trocável, um de cada vez. Tudo nesta aba é editável e pode ser ligado ou desligado.</p>'+
+  '<p class="hint" style="margin-bottom:14px">'+BILLING_NOTE+'</p>'+
+  '<div class="card" style="margin-bottom:16px"><div class="switchrow" style="border:0;padding:0;margin:0;background:transparent"><div class="tx"><b>Interruptor geral da cobrança</b><p>Ligado: o sistema gera as faturas mensais, cobra pelo gateway ativo e pausa a loja com fatura vencida além da carência. Desligado: nenhuma fatura nova é gerada e nenhuma loja é pausada.</p></div><span class="sw"><input type="checkbox" id="billEnabled" '+(b.enabled?"checked":"")+' /><i></i></span></div>'+
+  (b.enabled ? "" : '<div class="note" style="margin-top:12px"><b>⏸ Cobrança desligada:</b> o sistema <b>não gera faturas novas nem pausa lojas</b> enquanto o interruptor geral estiver desligado. As faturas já emitidas continuam visíveis abaixo, só para consulta.</div>')+
+  '</div>'+
+  gwBlockHTML()+
+  '<div class="kpis">'+
+    '<div class="kpi"><span>Recebido em faturas pagas</span><b>'+money(paidTotal)+'</b><small>receita da plataforma</small></div>'+
+    '<div class="kpi"><span>A receber (abertas + vencidas)</span><b>'+money(openTotal)+'</b><small>faturas em aberto</small></div>'+
+    '<div class="kpi"><span>Lojas em fatura mensal</span><b>'+(state.saStores.length-splitStores.length)+'</b><small>modo padrão</small></div>'+
+    '<div class="kpi"><span>Lojas em split automático</span><b>'+splitStores.length+'</b><small>opcional, por loja</small></div>'+
+  '</div>'+
+  '<div class="grid2" style="grid-template-columns:1fr 1fr">'+
+    '<div class="card"><h3>⚙️ Configurações da cobrança</h3>'+
+      '<div class="field" style="margin-top:12px"><label for="cbFee">Taxa da plataforma por venda (R$)</label><input id="cbFee" class="numin" inputmode="decimal" value="'+state.fee.toFixed(2).replace(".",",")+'" /><p class="hint">A mesma taxa da aba “Planos &amp; taxa” — mudou aqui, vale pra tudo: faturas, split, prévia do lojista e relatórios.</p></div>'+
+      '<div class="frow"><div class="field"><label for="cbClose">Dia de fechamento / vencimento</label><input id="cbClose" type="number" min="1" max="28" value="'+b.closeDay+'" /><p class="hint">Dia do mês em que a fatura fecha e vence.</p></div>'+
+      '<div class="field"><label for="cbGrace">Dias de carência após vencer</label><input id="cbGrace" type="number" min="0" max="30" value="'+b.graceDays+'" /></div></div>'+
+      '<div class="billbox">📌 <b>Regra:</b> fatura <b>vencida</b> + <b>'+b.graceDays+' dia(s) de carência</b> sem pagamento → a <b>loja é pausada automaticamente</b> até quitar. Próximo vencimento: <b>dia '+b.closeDay+' — '+nextDueStr()+'</b>.</div>'+
+      '<button class="btn gold" type="button" id="cbSave" style="margin-top:12px">Salvar configurações</button></div>'+
+    '<div class="card"><h3>🏪 Modo de cobrança por loja</h3><p class="sub">Fatura mensal é o padrão. O split é ligável/desligável por loja — e roda através do gateway do próprio lojista.</p>'+
+      state.saStores.map(s=>{ const rec = billRec(s.name); return '<div class="switchrow"><div class="tx"><b>'+s.name+'</b><p>Plano '+s.plan+' · '+(rec.mode==="split" ? "⚡ Split automático" : "🧾 Fatura mensal")+(storePaused(s.name) ? ' · <b style="color:var(--red)">pausada (fatura vencida)</b>' : "")+'</p></div><select data-billmode="'+s.name+'" aria-label="Modo de cobrança de '+s.name+'" style="border:1.5px solid var(--line2);border-radius:10px;padding:9px;background:var(--surface);max-width:205px"><option value="fatura"'+(rec.mode!=="split"?" selected":"")+'>🧾 Fatura mensal (padrão)</option><option value="split"'+(rec.mode==="split"?" selected":"")+'>⚡ Split automático</option></select></div>'; }).join("")+
+      '<p class="hint">Fatura mensal: <b>uma cobrança só por loja no mês</b> — o custo é o do provedor ativo (ex.: '+money(b.gateway.costs.mistic)+' fixo na MisticPay). Split: zero inadimplência (a parte da plataforma sai de cada venda na hora), mas o gateway consome '+money(b.gateway.costs.mistic)+' por venda.</p></div>'+
+  '</div>'+
+  '<div class="card" style="margin-top:16px"><h3>🧾 Faturas do mês</h3><p class="sub">Geradas do fechamento mensal (mensalidade do plano + vendas do mês × taxa). Cada fatura guarda o <b>provedor em que foi emitida</b> — faturas abertas seguem no provedor antigo mesmo se você trocar o gateway; só as novas usam o novo. O líquido de cada fatura desconta o custo do provedor dela.</p>'+
+    '<div class="tblwrap" style="margin-top:10px"><table class="tbl"><thead><tr><th>Loja</th><th>Competência</th><th>Mensalidade</th><th>Vendas</th><th>Taxas</th><th>Total</th><th>Vencimento</th><th>Status</th><th></th></tr></thead><tbody>'+
+    b.invoices.map(inv=>{ const prov = invProvider(inv); return '<tr><td data-l="Loja"><b>'+inv.store+'</b><br/><span class="hint">via '+provName(prov)+(prov!=="manual" ? ' · '+(invMode(inv)==="api" ? "API" : "Checkout") : "")+'</span></td><td data-l="Competência">'+inv.ref+'</td><td data-l="Mensalidade">'+money(inv.planPrice)+'</td><td data-l="Vendas">'+inv.sales.toLocaleString("pt-BR")+'</td><td data-l="Taxas">'+money(inv.fees)+'</td><td data-l="Total"><b>'+money(inv.total)+'</b></td><td data-l="Vencimento">'+fmtDateBR(inv.due)+'</td><td data-l="Status">'+invStatusTag(inv)+'</td><td>'+(inv.status==="paga" ? '<span class="hint">Baixada ✔</span>' : '<button class="btn sm gold" type="button" data-inv="'+inv.id+'"'+(b.enabled ? "" : " disabled")+'>'+(prov==="manual" ? "Cobrar (manual)" : "Gerar cobrança Pix")+'</button>')+'</td></tr>'; }).join("")+
+    '</tbody></table></div></div>'+
+  (splitStores.length ? splitStores.map(s=>splitCardHTML(s.name, true)).join("") : '<div class="card" style="margin-top:16px"><h3>⚡ Modo split</h3><p class="sub" style="margin-top:6px">Nenhuma loja em split no momento — troque o modo de uma loja no bloco “Modo de cobrança por loja” pra ver a configuração da taxa e o extrato do split.</p></div>');
+  box.innerHTML = h;
+  const en = $("#billEnabled"); if(en) en.addEventListener("change",()=>{ BILL.enabled = en.checked; renderAdmin(); toast(en.checked ? "Cobrança da plataforma LIGADA 💰 — faturas e pausas voltam a valer." : "Cobrança da plataforma DESLIGADA ⏸ — o sistema não gera faturas nem pausa lojas."); });
+  $$("#billingBody [data-gwprov]").forEach(btn=>btn.addEventListener("click",()=>openGwSwitch(btn.dataset.gwprov)));
+  $$("#billingBody [data-gwmode]").forEach(btn=>btn.addEventListener("click",()=>{ BILL.gateway.modes[BILL.gateway.provider] = btn.dataset.gwmode; renderBilling(); toast("Modo de conexão: "+(btn.dataset.gwmode==="api" ? "🔌 API (integração própria)" : "🌐 Gateway / Checkout hospedado")); }));
+  const gs = $("#gwSave"); if(gs) gs.addEventListener("click", saveGatewayCfg);
+  $$("#billingBody [data-copy]").forEach(btn=>btn.addEventListener("click",()=>copyTxt(btn.dataset.copy)));
+  const cs = $("#cbSave"); if(cs) cs.addEventListener("click",()=>{
+    const fv = parseFloat(($("#cbFee").value||"").replace(",","."));
+    if(fv>=0){ state.fee = fv; $("#feeIn").value = fv.toFixed(2).replace(".",","); }
+    BILL.closeDay = Math.min(Math.max(parseInt($("#cbClose").value,10)||5,1),28);
+    BILL.graceDays = Math.min(Math.max(parseInt($("#cbGrace").value,10)||0,0),30);
+    renderAdmin(); renderReports();
+    toast("Configurações de cobrança salvas 💰 Taxa "+money(state.fee)+" por venda · vencimento dia "+BILL.closeDay+" · carência de "+BILL.graceDays+" dia(s).");
+  });
+  $$("#billingBody [data-billmode]").forEach(sel=>sel.addEventListener("change",()=>{ const rec = billRec(sel.dataset.billmode); rec.mode = sel.value; renderAdmin(); toast(sel.value==="split" ? "⚡ "+sel.dataset.billmode+" agora está em split automático" : "🧾 "+sel.dataset.billmode+" agora está em fatura mensal"); }));
+  $$("#billingBody [data-inv]").forEach(btn=>btn.addEventListener("click",()=>openInvoice(btn.dataset.inv)));
+  $$("#billingBody [data-splitfee]").forEach(inp=>inp.addEventListener("change",()=>{ const rec = billRec(inp.dataset.splitfee); rec.splitFee = Math.max(parseFloat(String(inp.value).replace(",","."))||0,0); renderBilling(); toast("Taxa do split de "+inp.dataset.splitfee+": "+money(rec.splitFee)+" por venda."); }));
+}
+
+/* ---------- cobrança da fatura (modal): Pix, checkout ou manual ---------- */
+function platformPixPayload(inv){ return "00020126580014BR.GOV.BCB.PIX0136cobranca@imperiumtech.com.br520400005303986540"+inv.total.toFixed(2)+"5802BR5915IMPERIUMTECH LTDA6009ARACAJU62290525IMP"+String(inv.id).replace(/\D/g,"")+"6304C3D4"; }
+function checkoutLink(inv){ return "https://"+checkoutDomain(invProvider(inv))+"/fatura-"+inv.id+"-"+slugify(inv.store); }
+function openInvoice(invId){
+  const inv = BILL.invoices.find(i=>i.id===invId); if(!inv) return;
+  const prov = invProvider(inv), mode = invMode(inv);
+  const owner = state.saUsers.find(u=>u.store===inv.store);
+  const ownerFirst = owner ? owner.name.split(" ")[0] : "lojista";
+  const phone = owner ? owner.phone : "";
+  const cost = gatewayCost(prov, inv.total);
+  const head = '<h3>💰 '+(prov==="manual" ? "Fatura · cobrança manual (sem gateway)" : "Cobrança Pix · "+provName(prov))+'</h3>'+
+    '<p class="sub">Fatura da plataforma — competência <b>'+inv.ref+'</b> · pagador: <b>'+inv.store+'</b>'+(owner ? " ("+owner.name+")" : "")+'.</p>'+
+    '<div style="text-align:center;margin:14px 0 6px"><div style="font-family:Sora;font-weight:800;font-size:32px">'+money(inv.total)+'</div>'+
+    '<span class="hint">Mensalidade '+money(inv.planPrice)+' + '+inv.sales.toLocaleString("pt-BR")+' vendas × '+money(state.fee)+' = '+money(inv.fees)+' · vence em '+fmtDateBR(inv.due)+'</span></div>';
+  let mid = "", waMsg = "";
+  const waBase = "Olá, "+ownerFirst+"! Sua fatura IMPERIUMTECH de "+inv.ref+": "+money(inv.total)+" (mensalidade "+money(inv.planPrice)+" + "+inv.sales+" vendas = "+money(inv.fees)+" de taxas). Vencimento: "+fmtDateBR(inv.due)+". ";
+  if(prov==="manual"){
+    const key = BILL.gateway.platformPixKey;
+    waMsg = waBase + "Pague no Pix pra chave da plataforma: "+(key||"(a combinar)");
+    mid = '<p class="sub">O gateway está <b>desligado</b>: o sistema só gera e registra a fatura — a cobrança é feita por fora.</p>'+
+      '<label style="display:block;font-weight:700;margin-top:10px">Pix direto pra chave da plataforma</label>'+
+      '<div class="pixkey" style="margin-top:6px">'+(key || "⚠️ Chave Pix da plataforma não cadastrada — cadastre no Super Admin, na aba 💰 Cobrança, bloco do gateway.")+'</div>'+
+      (key ? '<button class="btn sm" type="button" data-copy="'+key+'" style="margin-top:8px">Copiar chave Pix</button>' : "")+
+      '<div class="billbox" style="margin-top:12px">Sem gateway, <b>sem custo de provedor</b>: líquido da plataforma = <b>'+money(inv.total)+'</b> (valor cheio). A baixa é manual, quando o Pix cair.</div>';
+  } else if(mode==="checkout"){
+    const link = checkoutLink(inv);
+    waMsg = waBase + "Pague neste link seguro do "+provName(prov)+": "+link;
+    mid = '<p class="sub">O pagamento acontece na <b>página hospedada do '+provName(prov)+'</b> (checkout) — a plataforma só acompanha o status, sem o lojista precisar saber de bastidor.</p>'+
+      '<label style="display:block;font-weight:700;margin-top:10px">Link de checkout do provedor</label>'+
+      '<div class="pixkey" style="margin-top:6px">'+link+'</div>'+
+      '<button class="btn sm" type="button" data-copy="'+link+'" style="margin-top:8px">Copiar link</button>'+
+      '<div class="billbox" style="margin-top:12px">Custo '+provName(prov)+' desta fatura: <b>'+money(cost)+'</b> → <b>líquido da plataforma: '+money(+(inv.total-cost).toFixed(2))+'</b>.</div>';
+  } else {
+    const payload = platformPixPayload(inv);
+    waMsg = waBase + "Pague no Pix copia e cola: "+payload;
+    mid = '<div class="qrbig" style="margin:6px auto">'+qrCells(payload)+'</div>'+
+      '<label style="display:block;font-weight:700;margin-top:10px">Pix copia e cola</label>'+
+      '<div class="pixkey" style="margin-top:6px">'+payload+'</div>'+
+      '<button class="btn sm" type="button" data-copy="'+payload+'" style="margin-top:8px">Copiar código Pix</button>'+
+      '<div class="billbox" style="margin-top:12px"><b>💡 Custo e líquido desta fatura</b><br/>Custo '+provName(prov)+': <b>'+money(cost)+'</b> (uma cobrança só no mês) → <b>líquido da plataforma: '+money(+(inv.total-cost).toFixed(2))+'</b>.'+(prov==="misticpay" ? '<br/>Se fosse split venda a venda, o gateway consumiria '+money(+(BILL.gateway.costs.mistic*inv.sales).toFixed(2))+' em taxas ('+inv.sales.toLocaleString("pt-BR")+' × '+money(BILL.gateway.costs.mistic)+').' : "")+'</div>';
+  }
+  const foot = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">'+
+    (phone ? '<a class="btn gold" style="flex:1;min-width:150px;text-align:center" target="_blank" rel="noopener" href="https://wa.me/55'+digits(phone)+'?text='+encodeURIComponent(waMsg)+'">Enviar fatura no WhatsApp</a>' : "")+
+    '<button class="btn" type="button" data-simpay="'+inv.id+'" style="flex:1;min-width:150px">✔ '+(prov==="manual" ? "Marcar como paga" : "Simular pagamento")+'</button>'+
+    '<button class="btn ghost" type="button" data-billclose style="flex:1;min-width:110px">Fechar</button></div>'+
+    '<p class="hint" style="margin-top:10px">'+BILLING_NOTE+'</p>';
+  $("#billModalBody").innerHTML = head + mid + foot;
+  openModal("billModal");
+  $$("#billModalBody [data-copy]").forEach(b=>b.addEventListener("click",()=>copyTxt(b.dataset.copy)));
+  $$("#billModalBody [data-simpay]").forEach(b=>b.addEventListener("click",()=>simulatePay(b.dataset.simpay, prov==="manual")));
+  $$("#billModalBody [data-billclose]").forEach(b=>b.addEventListener("click",()=>closeModal("billModal")));
+}
+function simulatePay(invId, manual){
+  const inv = BILL.invoices.find(i=>i.id===invId); if(!inv) return;
+  inv.status = "paga";
+  closeModal("billModal");
+  renderAdmin(); renderMyBilling();
+  toast(manual ? "Fatura de "+money(inv.total)+" marcada como paga ✔ (baixa manual registrada) — receita da plataforma atualizada." : "Pagamento simulado ✔ Fatura de "+money(inv.total)+" baixada — receita da plataforma atualizada.");
+}
+
+/* ---------- Painel do lojista: Minha assinatura e fatura ---------- */
+function renderMyBilling(){
+  const box = $("#myBillBody"); if(!box) return;
+  const name = state.store.name;
+  const rec = billRec(name);
+  const sa = state.saStores.find(s=>s.name===name);
+  const plan = sa ? sa.plan : "Pro";
+  const pl = state.plans.find(p=>p.name===plan);
+  const planPrice = pl ? pl.price : 0;
+  const vendas = sa ? sa.sales : state.sales.length;
+  const isSplit = rec.mode==="split";
+  const useFee = isSplit ? (rec.splitFee||2) : state.fee;
+  const myInvs = BILL.invoices.filter(i=>i.store===name);
+  const nextTotal = +(planPrice + vendas*state.fee).toFixed(2);
+  const paused = storePaused(name);
+  let h = '<div class="card" style="margin-bottom:16px"><h3>💳 Minha assinatura e fatura</h3><p class="sub">Transparência total: seu plano, como a sua loja paga a plataforma e quanto vai dar a próxima conta.</p><p class="hint" style="margin-top:6px">'+BILLING_NOTE+'</p>'+
+  (paused ? '<div class="note" style="margin-top:12px"><b>⏸ Loja pausada por fatura vencida.</b> Quite a fatura em aberto no histórico abaixo pra reativar a loja na hora.</div>' : "")+
+  (!BILL.enabled ? '<div class="note" style="margin-top:12px"><b>Cobrança da plataforma desligada no momento</b> pelo Super Admin — nenhuma fatura nova está sendo gerada e nenhuma loja é pausada.</div>' : "")+
+  '<div class="kpis" style="margin-top:14px;margin-bottom:0">'+
+    '<div class="kpi"><span>Plano atual</span><b style="font-size:20px">'+plan+'</b><small>'+(planPrice ? money(planPrice)+"/mês" : "grátis")+'</small></div>'+
+    '<div class="kpi"><span>Modo de cobrança da sua loja</span><b style="font-size:20px">'+(isSplit ? "⚡ Split automático" : "🧾 Fatura mensal")+'</b><small>definido pela plataforma</small></div>'+
+    '<div class="kpi"><span>Vendas concluídas (mês)</span><b>'+vendas.toLocaleString("pt-BR")+'</b><small>neste fechamento</small></div>'+
+    '<div class="kpi"><span>Taxas acumuladas</span><b>'+money(+(vendas*useFee).toFixed(2))+'</b><small>'+money(useFee)+' por venda</small></div>'+
+  '</div></div>';
+  if(isSplit){
+    h += '<div class="billbox"><b>⚡ Você está no split automático</b><br/>Suas taxas são descontadas automaticamente a cada venda (split pelo gateway da sua loja) — a parte da plataforma sai na hora, sem fatura de taxas no fim do mês e sem risco de esquecer vencimento. Só a mensalidade do plano '+plan+' ('+money(planPrice)+') continua vindo na fatura mensal, no histórico abaixo.</div>'+
+    splitGwNoticeHTML(name)+
+    splitCardHTML(name, false);
+  } else {
+    h += '<div class="card"><h3>🧾 Prévia da próxima fatura</h3>'+
+    '<div class="totrow"><span>Mensalidade do plano '+plan+'</span><span>'+money(planPrice)+'</span></div>'+
+    '<div class="totrow"><span>Taxas do mês ('+vendas.toLocaleString("pt-BR")+' vendas concluídas × '+money(state.fee)+')</span><span>'+money(+(vendas*state.fee).toFixed(2))+'</span></div>'+
+    '<div class="totrow grand"><span>Total previsto</span><span>'+money(nextTotal)+'</span></div>'+
+    '<p class="hint" style="margin-top:8px">Vencimento: <b>dia '+BILL.closeDay+'</b> — próximo em <b>'+nextDueStr()+'</b> · carência de '+BILL.graceDays+' dia(s); depois disso, a loja pausa até quitar.</p>'+
+    '<p class="hint">Uma cobrança só no mês inteiro, via '+provName(BILL.gateway.provider)+' — é por isso que o padrão é a fatura mensal, e não o desconto venda a venda (que cobraria uma taxa de gateway em cada venda).</p></div>';
+  }
+  h += '<div class="card" style="margin-top:16px"><h3>📜 Histórico de faturas</h3>'+
+  (myInvs.length ? myInvs.map(inv=>'<div class="switchrow"><div class="tx"><b>'+inv.ref+' — '+money(inv.total)+'</b><p>Mensalidade '+money(inv.planPrice)+' + '+inv.sales.toLocaleString("pt-BR")+' vendas ('+money(inv.fees)+' de taxas) · vence '+fmtDateBR(inv.due)+' · via '+provName(invProvider(inv))+'</p></div>'+invStatusTag(inv)+(inv.status!=="paga" ? '<button class="btn sm gold" type="button" data-inv="'+inv.id+'">Pagar com Pix</button>' : "")+'</div>').join("") : '<p class="hint" style="margin-top:8px">Nenhuma fatura emitida ainda para esta loja — a primeira sai no fechamento do mês.</p>')+
+  '</div>';
+  box.innerHTML = h;
+  $$("#myBillBody [data-inv]").forEach(b=>b.addEventListener("click",()=>openInvoice(b.dataset.inv)));
+  $$("#myBillBody [data-splitfee]").forEach(()=>{});
+}
+
+/* ---------- Painel do lojista: Gateways da minha loja ---------- */
+function myGwCredFieldsHTML(rec, k){
+  const cfg = rec.gw.cfg[k];
+  if(k==="misticpay") return '<div class="frow"><div class="field"><label>Chave pública (pk_…)</label><input data-gwcred="misticpay.pk" value="'+(cfg.pk||"")+'" placeholder="pk_…" /></div><div class="field"><label>Chave secreta (sk_…)</label><input type="password" data-gwcred="misticpay.sk" value="'+(cfg.sk||"")+'" placeholder="sk_…" /></div></div>';
+  if(k==="mercadopago") return '<div class="frow"><div class="field"><label>Access Token</label><input type="password" data-gwcred="mercadopago.token" value="'+(cfg.token||"")+'" placeholder="APP_USR-…" /></div><div class="field"><label>Public Key</label><input data-gwcred="mercadopago.pubkey" value="'+(cfg.pubkey||"")+'" placeholder="APP_USR-…" /></div></div>';
+  return '<div class="field"><label>Token de integração</label><input type="password" data-gwcred="pagseguro.token" value="'+(cfg.token||"")+'" placeholder="Token PagSeguro" /></div>';
+}
+function renderMyGateways(){
+  const box = $("#myGwBody"); if(!box) return;
+  const name = state.store.name;
+  const rec = billRec(name);
+  const cur = rec.gw.provider;
+  const card = (k, title, desc)=>{
+    const on = cur===k, mode = rec.gw.cfg[k].mode;
+    const wh = "https://api.imperiumtech.com.br/webhooks/loja/"+state.store.slug+"/"+k;
+    return '<div class="card" style="margin-bottom:12px;'+(on ? "border-color:var(--gold)" : "")+'"><div class="switchrow" style="border:0;padding:0;margin:0;background:transparent"><div class="tx"><b>'+title+'</b><p>'+desc+'</p></div>'+(on ? '<span class="tag g">Conectado ✔</span>' : '<span class="tag">Não configurado</span>')+'<span class="sw"><input type="checkbox" data-gwsw="'+k+'" '+(on ? "checked" : "")+' /><i></i></span></div>'+
+    (on ? '<div class="field" style="margin-top:12px"><label>Como conectar</label><div class="segbtns"><button class="chip'+(mode==="api" ? " on" : "")+'" type="button" data-gwmodebtn="'+k+':api">🔌 API</button><button class="chip'+(mode==="checkout" ? " on" : "")+'" type="button" data-gwmodebtn="'+k+':checkout">🌐 Gateway / Checkout</button></div></div>'+
+      (mode==="api"
+        ? myGwCredFieldsHTML(rec,k)+'<div class="field"><label>URL de webhook (o provedor avisa aqui quando um pagamento é confirmado)</label><div style="display:flex;gap:8px;flex-wrap:wrap"><input readonly value="'+wh+'" style="flex:1;min-width:200px" /><button class="btn sm" type="button" data-copy="'+wh+'">Copiar</button></div></div><p class="hint">⚠️ Credenciais de demonstração: <b>na produção, o segredo fica só no backend</b>, nunca no site.</p>'
+        : '<div class="field"><label>Conta / e-mail no provedor</label><input data-gwcred="'+k+'.account" value="'+(rec.gw.cfg[k].account||"")+'" placeholder="E-mail da sua conta no provedor" /></div><p class="hint">No modo checkout, cada venda gera um <b>link de pagamento hospedado pelo provedor</b> — o cliente paga lá e a confirmação volta automática (demonstração).</p>')
+    : "")+'</div>';
+  };
+  box.innerHTML = '<div class="card" style="margin-bottom:16px"><h3>💳 Gateways da minha loja</h3><p class="sub">Sem gateway, suas vendas caem no <b>Pix direto pra chave da sua loja</b> e você confirma o recebimento no painel — como sempre foi. Ligando um gateway <b>seu</b>, o pagamento do cliente passa por ele e a <b>confirmação no checkout fica automática</b> (neste modelo, demonstração). Um ativo por vez.</p></div>'+
+  '<div class="card" style="margin-bottom:12px;'+(cur==="none" ? "border-color:var(--gold)" : "")+'"><div class="switchrow" style="border:0;padding:0;margin:0;background:transparent"><div class="tx"><b>✋ Nenhum — Pix direto pra minha chave</b><p>O cliente paga na chave Pix da sua loja e você confirma o recebimento no painel.</p></div>'+(cur==="none" ? '<span class="tag g">Ativo ✔</span>' : '<span class="tag">Desligado</span>')+'<span class="sw"><input type="checkbox" data-gwsw="none" '+(cur==="none" ? "checked" : "")+' /><i></i></span></div></div>'+
+  card("misticpay","💠 MisticPay","Pix via API da MisticPay — e é por ele que roda o split (splitUser/splitTax) se a sua loja estiver em modo split.")+
+  card("mercadopago","🔵 Mercado Pago","Pix e checkout do Mercado Pago; split via marketplace_fee.")+
+  card("pagseguro","🟢 PagSeguro","Pix e checkout do PagSeguro; split via divisão de pagamento da API de Pedidos.")+
+  splitGwNoticeHTML(name)+
+  '<p class="hint">As credenciais acima são de demonstração deste modelo. Na produção, segredos ficam só no backend da plataforma. O split da plataforma roda <b>através do gateway da sua loja</b>; lojista sem gateway cai pra <b>fatura mensal</b>.</p>';
+  $$("#myGwBody [data-gwsw]").forEach(sw=>sw.addEventListener("change",()=>{
+    const k = sw.dataset.gwsw;
+    if(sw.checked) rec.gw.provider = k;
+    else if(rec.gw.provider===k) rec.gw.provider = "none";
+    renderMyGateways();
+    toast(k==="none" ? "Gateway desligado: vendas no Pix direto pra sua chave ✋" : "Gateway "+provName(k)+" ligado na sua loja ✔");
+  }));
+  $$("#myGwBody [data-gwmodebtn]").forEach(b=>b.addEventListener("click",()=>{ const parts = b.dataset.gwmodebtn.split(":"); rec.gw.cfg[parts[0]].mode = parts[1]; renderMyGateways(); }));
+  $$("#myGwBody [data-gwcred]").forEach(inp=>inp.addEventListener("change",()=>{ const parts = inp.dataset.gwcred.split("."); rec.gw.cfg[parts[0]][parts[1]] = inp.value; toast("Salvo (demonstração) ✔"); }));
+  $$("#myGwBody [data-copy]").forEach(b=>b.addEventListener("click",()=>copyTxt(b.dataset.copy)));
+}
 
 /* ---------- combos promocionais ---------- */
 function comboSum(c){ return (c.items||[]).reduce((s,i)=>s+i.price*i.qty,0); }
