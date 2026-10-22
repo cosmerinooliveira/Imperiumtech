@@ -72,6 +72,7 @@ a{color:var(--gold2)}
 .btn.block{width:100%}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.danger{color:var(--red);border-color:var(--red)}
+.btn.dangerfill{background:var(--red);border-color:var(--red);color:#fff}
 
 /* ---------- role + view nav ---------- */
 .segbar{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:61px;z-index:55}
@@ -662,7 +663,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <p class="login-err" id="lgError">Usuário ou senha diferentes do demo. Confira o quadro dourado acima: usuário <b>demo</b>, senha <b>demo</b>.</p>
       <button class="btn gold block" id="lgEnter" type="button" style="margin-top:16px;width:100%">Entrar na demonstração →</button>
       <button class="btn ghost block" id="lgBack" type="button" style="margin-top:8px;width:100%">← Voltar e escolher outro segmento</button>
-      <p class="hint" style="margin-top:14px;text-align:center">Ambiente de demonstração: dados 100% fictícios, exibidos com marca d'água e apagados ao sair. Nenhuma informação real é pedida nem salva.</p>
+      <p class="hint" style="margin-top:14px;text-align:center">Ambiente de demonstração: dados 100% fictícios, exibidos com marca d'água e apagados ao sair. Como num app, a sessão fica aberta neste aparelho até você tocar em sair — fechar ou recarregar não desloga. Nenhuma informação real é pedida nem salva.</p>
     </div>
   </div>
 </section>
@@ -692,7 +693,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
           <button class="btn sm ghost" id="owRestoreNo" type="button">Cancelar</button>
         </div>
       </div>
-      <p class="hint" style="margin-top:14px">🔒 <b>Como funciona neste modelo:</b> a senha que você criar fica guardada com hash (SHA-256) <b>só neste navegador</b> — vale neste aparelho. Na produção, o acesso vira login real no servidor (Supabase Auth): vale em qualquer aparelho, o primeiro acesso chega como convite seguro no seu e-mail e dá até pra entrar com o botão “Entrar com Google”, sem senha guardada no sistema.</p>
+      <p class="hint" style="margin-top:14px">🔒 <b>Como funciona neste modelo:</b> a senha que você criar fica guardada com hash (SHA-256) <b>só neste navegador</b> — vale neste aparelho. Na produção, o acesso vira login real no servidor (Supabase Auth): vale em qualquer aparelho, o primeiro acesso chega como convite seguro no seu e-mail e dá até pra entrar com o botão “Entrar com Google”, sem senha guardada no sistema. E a sessão é de aplicativo: entrou uma vez, você continua logado neste aparelho até tocar em Sair (que pede confirmação) — fechar, recarregar ou trocar de tela nunca desloga.</p>
     </div>
   </div>
 </section>
@@ -719,7 +720,7 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
       <p class="login-err" id="usError"></p>
       <button class="btn gold block" id="usEnter" type="button" style="margin-top:16px;width:100%">Entrar na minha loja →</button>
       <button class="btn ghost block" id="usBack" type="button" style="margin-top:8px;width:100%">← Voltar</button>
-      <p class="hint" style="margin-top:14px">🔒 <b>Neste modelo,</b> a senha que você criar vale <b>neste navegador</b> (guardada com hash). Na produção, o convite de primeiro acesso e a redefinição chegam <b>no seu e-mail</b>, com link seguro — e a senha vale em qualquer aparelho.</p>
+      <p class="hint" style="margin-top:14px">🔒 <b>Neste modelo,</b> a senha que você criar vale <b>neste navegador</b> (guardada com hash). Na produção, o convite de primeiro acesso e a redefinição chegam <b>no seu e-mail</b>, com link seguro — e a senha vale em qualquer aparelho. A sessão funciona como app: você fica logado neste aparelho até tocar em sair.</p>
     </div>
   </div>
 </section>
@@ -1614,6 +1615,18 @@ footer .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr
   </div>
 </div>
 
+<!-- Folha de confirmação de saída — padrão único de TODOS os botões "Sair" -->
+<div class="modal-bg" id="logoutModal">
+  <div class="modal">
+    <h3>🚪 Sair da sua conta?</h3>
+    <p class="sub">Você vai precisar entrar de novo com e-mail e senha.</p>
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+      <button class="btn gold" id="logoutStay" type="button" style="flex:1">Continuar logado</button>
+      <button class="btn dangerfill" id="logoutGo" type="button" style="flex:1">Sair</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status"></div>
 
 <!-- Marca d'água da demonstração (visível só dentro da demo) -->
@@ -1932,6 +1945,7 @@ function applyStore(key, demo){
   const skipSave = !!state._skipSave; state._skipSave = false;
   if(!skipSave) saveBundle();
   state.seg = key; state.demo = !!demo; state.storeKey = storeKey();
+  if(demo){ const ss = loadSession(); if(ss && ss.kind==="demo" && ss.seg!==key){ ss.seg = key; saveSession(ss); } }
   const S = seg(); const K = state.storeKey;
   $$(".seg-chip").forEach(c=>c.classList.toggle("on", c.dataset.seg===key));
   state.cart = []; state.coupon = 0; state.couponCode = ""; $("#couponIn").value = "";
@@ -3008,6 +3022,7 @@ function showAccess(u, temp, title){
 function openReset(user){
   const np = genPass(); user.pass = np; user.status = "pendente";
   if(user.email && state.saUsers.indexOf(user)>=0){ user.temp = np; lsSetUser(user.email, {reset:true, temp:np}); }
+  if(user.email){ const ss = loadSession(); if(ss && ss.kind==="lojista" && ss.email===user.email){ ss.pending = true; saveSession(ss); } }
   showAccess(user, np, "Senha redefinida — novo acesso");
   renderTeam(); renderSaUsers();
 }
@@ -3951,6 +3966,7 @@ function applyRoleNav(){
 }
 function setRole(role){
   state.role = role;
+  if(state.demo){ const s = loadSession(); if(s && s.kind==="demo"){ s.role = role; saveSession(s); } }
   $$("[data-drole]").forEach(x=>x.classList.toggle("on", x.dataset.drole===role));
   $$("#dlRoles [data-role]").forEach(x=>x.classList.toggle("on", x.dataset.role===role));
   updateStoreChrome(); applyRoleNav();
@@ -3970,6 +3986,7 @@ function enterDemo(segKey){
   document.body.classList.remove("gated");
   document.body.classList.add("demo");
   applyStore(segKey, true);
+  saveSession({kind:"demo", seg:segKey, role:"admin"});
   $("#leadFab").style.display = "";
   $("#exitDemoBtn").style.display = "";
   setRole("admin");
@@ -4007,6 +4024,22 @@ function lsLoad(){ try{ return JSON.parse(localStorage.getItem(AUTH_LS_KEY))||{}
 function lsSave(d){ try{ localStorage.setItem(AUTH_LS_KEY, JSON.stringify(d)); }catch(e){} }
 function lsGetUser(email){ const d = lsLoad(); return (d.users||{})[(email||"").trim().toLowerCase()]; }
 function lsSetUser(email, rec){ const d = lsLoad(); d.users = d.users||{}; const k = (email||"").trim().toLowerCase(); if(rec) d.users[k] = rec; else delete d.users[k]; lsSave(d); }
+/* ---------- SESSÃO DE APP — padrão de TODAS as áreas logadas ----------
+   Logou uma vez, fica logado NESTE aparelho: a sessão salva é restaurada no
+   boot, antes de qualquer tela de login. Nada desloga sozinho — nem reload,
+   nem trocar de tela, nem fechar e reabrir o app/navegador. Só o botão Sair
+   (com a confirmação abaixo) encerra a sessão. Neste modelo, a sessão é o
+   estado local salvo neste navegador; na produção é o token real de login
+   (Supabase Auth), como já roda no PedePix. */
+function saveSession(s){ const d = lsLoad(); if(s) d.session = s; else delete d.session; lsSave(d); }
+function loadSession(){ return lsLoad().session || null; }
+function clearSession(){ saveSession(null); }
+/* folha de confirmação de saída: "Continuar logado" cancela e nada acontece;
+   "Sair" (vermelho) executa a saída de verdade e apaga a sessão salva */
+let pendingLogout = null;
+function askLogout(fn){ pendingLogout = fn; openModal("logoutModal"); }
+$("#logoutStay").addEventListener("click",()=>{ pendingLogout = null; closeModal("logoutModal"); });
+$("#logoutGo").addEventListener("click",()=>{ const fn = pendingLogout; pendingLogout = null; closeModal("logoutModal"); if(fn) fn(); });
 async function sha256(str){
   try{
     if(window.crypto && crypto.subtle && window.TextEncoder){
@@ -4046,9 +4079,10 @@ $("#owEnter").addEventListener("click", async ()=>{
   if(email!==OWNER_EMAIL){ loginErr("owError","Este e-mail não é o do dono do sistema. O Super Admin abre somente com "+OWNER_EMAIL+"."); return; }
   const d = lsLoad();
   if(d.owner && d.owner.hash){
-    if(await sha256(p)===d.owner.hash){ ownerAuthed = true; enterOwner(); }
+    if(await sha256(p)===d.owner.hash){ ownerAuthed = true; saveSession({kind:"owner"}); enterOwner(); }
     else loginErr("owError","Senha incorreta. Confira (use o olhinho 👁) ou restaure o acesso neste aparelho, logo abaixo.");
   } else if(p===OWNER_TEMP){
+    saveSession({kind:"owner", pending:true});
     openForceChange({kind:"owner", temp:OWNER_TEMP, title:"Crie a senha do Super Admin", sub:"Primeiro acesso com a senha temporária. Crie agora a sua senha definitiva do sistema — diferente da temporária e conhecida só por você."});
   } else {
     loginErr("owError","Senha incorreta. No primeiro acesso, use a senha temporária que você recebeu fora da página.");
@@ -4062,10 +4096,10 @@ $("#owRestoreYes").addEventListener("click",()=>{
   $("#owRestoreBox").style.display = "none"; $("#owPass").value = ""; $("#owError").style.display = "none";
   toast("Acesso restaurado neste aparelho — entre com a senha temporária e crie uma senha nova.");
 });
-$("#saLogout").addEventListener("click",()=>{
-  ownerAuthed = false; enterGate();
+$("#saLogout").addEventListener("click",()=>askLogout(()=>{
+  ownerAuthed = false; clearSession(); enterGate();
   toast("Super Admin travado 🔐 Para entrar de novo, use o botão do dono do sistema, com seu e-mail e senha.");
-});
+}));
 /* trocar a própria senha dentro do Super Admin */
 $("#saPassSave").addEventListener("click", async ()=>{
   const cur = $("#saCur").value, n = $("#saNew").value, c = $("#saConf").value;
@@ -4094,12 +4128,13 @@ $("#usEnter").addEventListener("click", async ()=>{
   if(!u){ loginErr("usError","E-mail não cadastrado como lojista. Confira o e-mail de acesso — ou fale com o suporte IMPERIUMTECH."); return; }
   const rec = lsGetUser(email);
   if(rec && rec.reset){
-    if(p===rec.temp){ openForceChange({kind:"lojista", user:u, email:email, temp:rec.temp, title:"Senha redefinida — crie a sua nova senha", sub:"O suporte gerou uma senha temporária nova para você. Crie agora a sua senha definitiva — só você conhece."}); }
+    if(p===rec.temp){ saveSession({kind:"lojista", email:email, pending:true}); openForceChange({kind:"lojista", user:u, email:email, temp:rec.temp, title:"Senha redefinida — crie a sua nova senha", sub:"O suporte gerou uma senha temporária nova para você. Crie agora a sua senha definitiva — só você conhece."}); }
     else loginErr("usError","Senha incorreta. Após um reset, o acesso é com a senha temporária nova enviada pelo suporte.");
   } else if(rec && rec.hash){
     if(await sha256(p)===rec.hash){ enterStoreAs(u); }
     else loginErr("usError","Senha incorreta. Confira (use o olhinho 👁) — esqueceu? Peça um reset ao suporte: uma temporária nova chega pra você.");
   } else if(p===(u.temp||LOJISTA_TEMP)){
+    saveSession({kind:"lojista", email:email, pending:true});
     openForceChange({kind:"lojista", user:u, email:email, temp:p, title:"Crie a sua senha, "+u.name.split(" ")[0], sub:"Primeiro acesso com a senha temporária. Crie agora a senha definitiva da sua loja — nem o suporte enxerga a sua senha."});
   } else {
     loginErr("usError","Senha incorreta. No primeiro acesso, use a senha temporária enviada pelo suporte.");
@@ -4114,6 +4149,7 @@ function enterStoreAs(u){
   document.body.classList.remove("gated"); document.body.classList.remove("demo");
   $("#leadFab").style.display = "none"; $("#exitDemoBtn").style.display = "none";
   clientSession = {email:u.email};
+  saveSession({kind:"lojista", email:u.email});
   applyStore(u.storeKey, false);
   if(u.store && state.store.name!==u.store){
     state.store.name = u.store; state.store.initials = initialsOf(u.store);
@@ -4132,7 +4168,7 @@ function openForceChange(ctx){
   showView("forcechange"); window.scrollTo(0,0);
   setTimeout(()=>$("#fcNew").focus(), 80);
 }
-$("#fcCancel").addEventListener("click",()=>{ fcCtx = null; enterGate(); });
+$("#fcCancel").addEventListener("click",()=>{ fcCtx = null; clearSession(); enterGate(); });
 $("#fcSave").addEventListener("click", async ()=>{
   if(!fcCtx) return;
   const n = $("#fcNew").value, c = $("#fcConfirm").value;
@@ -4142,7 +4178,7 @@ $("#fcSave").addEventListener("click", async ()=>{
   const h = await sha256(n);
   if(fcCtx.kind==="owner"){
     const d = lsLoad(); d.owner = {hash:h}; lsSave(d);
-    ownerAuthed = true; fcCtx = null;
+    ownerAuthed = true; saveSession({kind:"owner"}); fcCtx = null;
     toast("Senha do Super Admin criada ✅ A temporária não funciona mais neste aparelho.");
     enterOwner();
   } else {
@@ -4196,10 +4232,10 @@ $("#mpSave").addEventListener("click", async ()=>{
   renderSaUsers();
   toast("Sua senha foi trocada ✅ Vale neste navegador a partir de agora.");
 });
-$("#mpLogout").addEventListener("click",()=>{
-  clientSession = null; enterGate();
+$("#mpLogout").addEventListener("click",()=>askLogout(()=>{
+  clientSession = null; clearSession(); enterGate();
   toast("Você saiu da sua loja. Para entrar de novo: “Já sou cliente — entrar na minha loja”, com seu e-mail e senha.");
-});
+}));
 /* ---------- login da demonstração: escolher o segmento NÃO entra direto ---------- */
 let pendingDemoSeg = "restaurante";
 const GATE_META = {
@@ -4237,8 +4273,8 @@ function resetDemoData(){
   if(window.__hwReset) window.__hwReset();
   state._skipSave = true; // não ressalva o estado usado da demo ao trocar de loja
 }
-$("#exitDemoBtn").addEventListener("click",()=>{ resetDemoData(); enterGate(); toast("Você saiu da demonstração. 🧹 Os dados fictícios foram apagados — na próxima entrada, a demo começa limpa, do estado inicial."); });
-$("#demoSwapSeg").addEventListener("click",()=>{ resetDemoData(); enterGate(); document.querySelector("#demo").scrollIntoView({behavior:"smooth"}); toast("Escolha outro segmento para testar — cada demonstração mostra só o que é daquele segmento, e os dados da anterior foram apagados."); });
+$("#exitDemoBtn").addEventListener("click",()=>askLogout(()=>{ resetDemoData(); clearSession(); enterGate(); toast("Você saiu da demonstração. 🧹 Os dados fictícios foram apagados — na próxima entrada, a demo começa limpa, do estado inicial."); }));
+$("#demoSwapSeg").addEventListener("click",()=>{ resetDemoData(); clearSession(); enterGate(); document.querySelector("#demo").scrollIntoView({behavior:"smooth"}); toast("Escolha outro segmento para testar — cada demonstração mostra só o que é daquele segmento, e os dados da anterior foram apagados."); });
 $$("[data-drole]").forEach(b=>b.addEventListener("click",()=>{ setRole(b.dataset.drole); toast("Visão demo: "+rolePersona()+" — os menus mostram só as telas dessa função, sempre dentro desta loja."); }));
 $("#dlEnter").addEventListener("click",()=>{
   const u = $("#dlUser").value.trim().toLowerCase(), p = $("#dlPass").value.trim();
@@ -4288,8 +4324,42 @@ function renderAll(){
   if(window.__hw) window.__hw();
   applyRoleNav();
 }
+/* ---------- boot: restaura a sessão salva ANTES de mostrar qualquer login ----------
+   Sessão de app: quem já entrou neste aparelho abre direto na sua área —
+   Super Admin, painel da loja ou demonstração (com a função do funcionário).
+   Sessão "pending" = login feito com senha temporária: volta direto pra
+   troca obrigatória de senha, com a sessão já ativa. Sem sessão salva (ou
+   sessão inválida), cai na página inicial, como sempre. */
+function restoreSession(){
+  const s = loadSession();
+  if(!s || !s.kind){ enterGate(); return; }
+  if(s.kind==="owner"){
+    if(s.pending){
+      openForceChange({kind:"owner", temp:OWNER_TEMP, title:"Crie a senha do Super Admin", sub:"Primeiro acesso com a senha temporária. Crie agora a sua senha definitiva do sistema — diferente da temporária e conhecida só por você."});
+      return;
+    }
+    ownerAuthed = true; enterOwner(); return;
+  }
+  if(s.kind==="lojista"){
+    const u = state.saUsers.find(x=>x.email===s.email);
+    if(!u || !u.storeKey){ clearSession(); enterGate(); return; }
+    if(s.pending){
+      const rec = lsGetUser(u.email);
+      if(rec && rec.reset) openForceChange({kind:"lojista", user:u, email:u.email, temp:rec.temp, title:"Senha redefinida — crie a sua nova senha", sub:"O suporte gerou uma senha temporária nova para você. Crie agora a sua senha definitiva — só você conhece."});
+      else openForceChange({kind:"lojista", user:u, email:u.email, temp:(u.temp||LOJISTA_TEMP), title:"Crie a sua senha, "+u.name.split(" ")[0], sub:"Primeiro acesso com a senha temporária. Crie agora a senha definitiva da sua loja — nem o suporte enxerga a sua senha."});
+      return;
+    }
+    enterStoreAs(u); return;
+  }
+  if(s.kind==="demo"){
+    enterDemo(GATE_META[s.seg] ? s.seg : "restaurante");
+    if(s.role && s.role!=="admin") setRole(s.role);
+    return;
+  }
+  clearSession(); enterGate();
+}
 applyStore("restaurante", false);
-enterGate();
+restoreSession();
 </script>
 <script>
 "use strict";
